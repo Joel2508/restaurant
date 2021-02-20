@@ -20,7 +20,8 @@ export default function Account() {
     if (Login == null){
        return  <Loading isVisible= {true} text="Loading..."/>
     }
-    return Login ? <UserGuest/> : <UserLogged/>
+    return Login ?  <UserLogged/> : <UserGuest/>
+
 
 }
 

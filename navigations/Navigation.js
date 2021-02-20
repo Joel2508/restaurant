@@ -59,7 +59,7 @@ export default function Navigation() {
                         
                 }}
                 screenOptions={({ route }) => ({
-                    tabBarIcon: ({color}) => screenOptions(route, color)
+                    tabBarIcon: ({ color }) => screenOptions(route, color)
                 })}>                            
                 
                 <Tab.Screen
