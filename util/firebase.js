@@ -2,13 +2,13 @@ import firebase from 'firebase/app'
 import 'firebase/firestore'
 
 
-const  firebaseConfig = {
-    apiKey: "AIzaSyAH3gAj2eDu6TTlZnQZrPsqS6BBVUmwn44",
-    authDomain: "crud-d8448.firebaseapp.com",
-    projectId: "crud-d8448",
-    storageBucket: "crud-d8448.appspot.com",
-    messagingSenderId: "871039027209",
-    appId: "1:871039027209:web:c708ac739704425f1a50d8"
-  }
+const firebaseConfig = {
+  apiKey: "AIzaSyAuqPaZigFoLb80W4TMnxsSAFevJTFc1HA",
+  authDomain: "restaurant-c1d02.firebaseapp.com",
+  projectId: "restaurant-c1d02",
+  storageBucket: "restaurant-c1d02.appspot.com",
+  messagingSenderId: "1029353427413",
+  appId: "1:1029353427413:web:5a644560d5d58af4b16d5c"
+}
 
   export const firebaseApp = firebase.initializeApp(firebaseConfig)
