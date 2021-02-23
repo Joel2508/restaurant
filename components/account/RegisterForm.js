@@ -11,6 +11,7 @@ import Loading from '../Loading'
 export default function RegisterForm() {
     const navigation = useNavigation()
 
+    
     const [showPassword, setShowPassword] = useState(false)
     const [formData, setFormData] = useState(defaultFormDataValue())
 
@@ -28,14 +29,18 @@ export default function RegisterForm() {
 
     const registerUserClick = async() => {
         if (!validateData()){
-            return;
+            return
         }
         setLoadgin(true)
+
         const resutl = await registerUser(formData.email, formData.password)
+
         setLoadgin(false)
+
         if(!resutl.statusResponse){
-        seterroEmail(resutl.email)
-        return
+         seterroEmail(resutl.error)
+         setFormData("")
+         return
         }
         navigation.navigate("account")
     }
