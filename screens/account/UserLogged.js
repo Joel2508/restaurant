@@ -25,7 +25,16 @@ export default function UserLogged() {
     return (
         <View style={styles.container}>
              {
-               user &&   <InforUser user = {user}/>             
+               user && 
+               (
+                   <View> 
+                     <InforUser 
+                     user = {user} 
+                     setLoading={setLoading}
+                      setLoadingText={setLoadingText} 
+                      /> 
+                   </View>
+               )            
              }
             <Text>Account User....</Text>
             <Button 
