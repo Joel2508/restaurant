@@ -7,6 +7,8 @@ import { closeSession, getCurrentUser } from '../../util/action'
 import Toast from  'react-native-easy-toast'
 import InforUser from '../../components/account/InforUser'
 import Loading from '../../components/Loading'
+import AccountOptions from '../../components/account/AccountOptions'
+
 
 
 export default function UserLogged() {
@@ -31,12 +33,14 @@ export default function UserLogged() {
                      <InforUser 
                      user = {user} 
                      setLoading={setLoading}
-                      setLoadingText={setLoadingText} 
+                    setLoadingText={setLoadingText} 
                       /> 
+                      <AccountOptions
+                      user={user}
+                      toastRef = {toastRef}/>
                    </View>
                )            
              }
-            <Text>Account User....</Text>
             <Button 
             buttonStyle = {styles.btnLogOut}
             titleStyle = {styles.btnLogOutTitle}
