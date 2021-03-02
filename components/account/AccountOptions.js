@@ -3,14 +3,15 @@ import { StyleSheet, Text, View } from 'react-native'
 import { map } from 'loadsh'
 import { Icon, ListItem } from 'react-native-elements'
 import Modal from '../Modal'
-import ChangeDisplayName from './ChangeDisplayNameForm'
 import ChangeDisplayNameForm from './ChangeDisplayNameForm'
+import ChangeDisplayEmailForm from './ChangeDisplayEmailForm'
 
 
-export default function AccountOptions({user, toastRef}) {
+export default function AccountOptions({user, toastRef, setReloadUser}) {
     const [shoModal, setshoModal] = useState(false)
      
     const [renderComponent, setRenderComponent] = useState(null)
+    const displayEmail = user.email
     const gerenetaOption = () => {
         return [{
     
@@ -40,26 +41,36 @@ export default function AccountOptions({user, toastRef}) {
     }
     const selectComponent = (key) =>{ 
         
-        switch (key) {
-            case "displayName":
-                setRenderComponent (
-                    <ChangeDisplayNameForm displayname={user.displayname} setshoModal={setshoModal}
-                    toastRef ={toastRef}>
 
-                    </ChangeDisplayNameForm>
-                )            
-                break;
-            case "displayEmail":
-                setRenderComponent(
-                    <ChangeDisplayName>Display Email</ChangeDisplayName>
-                )
-                case "displayPassword":
-                    setRenderComponent(
-                        <Text>Display Password...</Text>
-                    )
-            default:
-                break;
+        if(key === "displayName"){
+            setRenderComponent (
+                <ChangeDisplayNameForm
+                displayName = {user.displayName} 
+                setshoModal={setshoModal}
+                toastRef ={toastRef}
+                setReloadUser = {setReloadUser}>
+
+                </ChangeDisplayNameForm>
+            )            
         }
+        if(key === "displayEmail"){
+            setRenderComponent(
+                <ChangeDisplayEmailForm 
+                displayEmail= {displayEmail} 
+                setshoModal={setshoModal}
+                 toastRef ={toastRef}
+                 setReloadUser = {setReloadUser}>
+                    
+                </ChangeDisplayEmailForm>
+
+            )
+        }
+        if(key === "displayPassword"){
+            setRenderComponent(
+                <Text>Display Password...</Text>
+            )
+
+        }        
         setshoModal(true)
     
     }
@@ -107,5 +118,5 @@ const styles = StyleSheet.create({
     menuItem : {
         borderBottomWidth: 1,
         borderBottomColor : "#c1c1c1"
-    }
+    },
 })

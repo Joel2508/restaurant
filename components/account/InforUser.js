@@ -4,7 +4,7 @@ import { Avatar } from 'react-native-elements'
 import { updateProfile, uploadImage } from '../../util/action'
 import { loadImageFromGallery } from '../../util/helper'
 
-export default function InforUser({ user, setLoading, setLoadingText }) {
+export default function InforUser({ user, setLoading, setLoadingText, setReloadUser }) {
     const [photoUrl, setPhotoUrl] = useState(user.photoURL)
 
     const changePhoto = async() =>{
@@ -19,7 +19,7 @@ export default function InforUser({ user, setLoading, setLoadingText }) {
       setLoading(true)
 
       const resultUploadImage = await uploadImage(result.image,  "avatars", user.uid) 
-      console.log(resultUploadImage)
+      
 
       if(!resultUploadImage.statusResponse){
           setLoading(false)
@@ -34,6 +34,7 @@ export default function InforUser({ user, setLoading, setLoadingText }) {
         Alert.alert("Error update the image profile ....")
 
       }
+      setReloadUser(true)
     }
 
     return (
@@ -42,10 +43,10 @@ export default function InforUser({ user, setLoading, setLoadingText }) {
              rounded
              size ="large"
              onPress = {() => changePhoto()}
-             containerStyle ={styles.avatar}
+             containerStyle ={styles.avatar}             
              source ={
                  user.photoURL ? {uri : photoUrl} : require("../../assets/avatar1.png")
-             }
+             } setReloadUser = {setReloadUser}
             />
             <View style={styles.inforUser}>
                 <Text style={styles.displayName}>
@@ -67,13 +68,12 @@ const styles = StyleSheet.create({
         justifyContent : 'center',
         flexDirection : "row",
         backgroundColor : "#f9f9f9",
-        paddingVertical : 30
+        paddingVertical : 30,
+        
     },
     avatar : {
         borderColor : "#c1c1c1",
-        backgroundColor : "#ffffff",
-        width : 100,
-        height: 100
+        backgroundColor : "#ffffff",        
     },
     inforUser: {
      marginLeft : 20,     
