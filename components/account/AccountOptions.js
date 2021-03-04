@@ -5,6 +5,8 @@ import { Icon, ListItem } from 'react-native-elements'
 import Modal from '../Modal'
 import ChangeDisplayNameForm from './ChangeDisplayNameForm'
 import ChangeDisplayEmailForm from './ChangeDisplayEmailForm'
+import ChangeDisplayPassword from './ChangeDisplayPassword'
+
 
 
 export default function AccountOptions({user, toastRef, setReloadUser}) {
@@ -16,7 +18,7 @@ export default function AccountOptions({user, toastRef, setReloadUser}) {
         return [{
     
             title: "Change, First Name and Last Name",
-            iconNameLeft: "account-circle",
+            iconNameLeft: "account-circle-outline",
             iconNameRight: "chevron-right",
             iconColorLeft: "#3c3c4c",        
             iconColorRight: "#3c3c4c",        
@@ -56,18 +58,21 @@ export default function AccountOptions({user, toastRef, setReloadUser}) {
         if(key === "displayEmail"){
             setRenderComponent(
                 <ChangeDisplayEmailForm 
-                displayEmail= {displayEmail} 
-                setshoModal={setshoModal}
-                 toastRef ={toastRef}
-                 setReloadUser = {setReloadUser}>
-                    
+                    displayEmail= {displayEmail} 
+                    setshoModal={setshoModal}
+                    toastRef ={toastRef}
+                    setReloadUser = {setReloadUser}>                    
                 </ChangeDisplayEmailForm>
 
             )
         }
         if(key === "displayPassword"){
             setRenderComponent(
-                <Text>Display Password...</Text>
+
+                <ChangeDisplayPassword             
+                    setshoModal={setshoModal}
+                    toastRef ={toastRef}>
+                </ChangeDisplayPassword>
             )
 
         }        

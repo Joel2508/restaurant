@@ -20,8 +20,7 @@ export default function ChangeDisplayNameForm({displayName, setshoModal, toastRe
           setLoading(true)
           const result = await updateProfile({displayName: newDisplayName})
           setLoading(false)
-          
-          console.log(result)
+                    
           if(!result.stastuResponse ){
             setError("Error update change firt name and last name")
             return
@@ -58,7 +57,7 @@ export default function ChangeDisplayNameForm({displayName, setshoModal, toastRe
             errorMessage ={error}
             leftIcon = {{
                 type: "material-community",
-                name: "account-circle",
+                name: "account-circle-outline",
                 color : "#050505"
             }}
             

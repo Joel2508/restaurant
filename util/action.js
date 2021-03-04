@@ -17,7 +17,6 @@ export const isUserLogged = () =>{
     return isLogged
 }
 
-
 export const getCurrentUser = () => {
     return firebase.auth().currentUser
 }
@@ -40,7 +39,8 @@ export const registerUser = async(email, password) => {
 
 
 export const signInWithEmailAndPassword = async(email, password) => {
-    const result = {statusResponse : true, error: null}
+
+    const result = { statusResponse: true, error: null}
     try {
         await firebase.auth().signInWithEmailAndPassword(email, password)
     } catch (error) {
@@ -90,21 +90,30 @@ export const updateEmail = async(email) => {
     return result     
 }
 
+export const updatePassword = async(password) => {
+    const result = { statusResponse: true, error: null }    
+    try {
+        await firebase.auth().currentUser.updatePassword(password)
+    } catch (error) {
+        result.statusResponse = false
+        result.error = error
+    }
+    return result     
+}
 
 
 export const reauthencate = async(password) => {
     const result = { statusResponse: true, error: null }
-    const user = getCurrentUser()
-
-    const credencial = firebase.auth.EmailAuthProvider.credential(user.email, password)
+    const user = getCurrentUser()    
+    const credentials = firebase.auth.EmailAuthProvider.credential(user.email, password)
     
     try {
-        await user.reauthenticateWithCredential(credencial)
+        await user.reauthenticateWithCredential(credentials)        
     } catch (error) {
         result.statusResponse = false
-        result.error = error        
+        result.error = error
     }
-    return result     
+    return result    
 }
 
 

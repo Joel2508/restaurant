@@ -12,30 +12,35 @@ import { validateEmail } from '../../util/helper'
 export default function LoginForm() {
 
     const [showPassword, setShowPassword] = useState(false)
-    const [formData, setFormData] = useState(defaultFormDataValue())
-
+    //const [formData, setFormData] = useState(defaultFormDataValue())
+    const [email, setEmail] = useState(null)
+    const [password, setPassword] = useState(null)
     const [erroEmail, seterroEmail] = useState("")
     const [erroPassword, seterroPassword] = useState("")
 
     const [loadgin, setLoadgin] = useState(false)
     const navigation = useNavigation()
-    const onChange =(e, type) => {
-        setFormData({...formData, [type] : e.nativeEvent.text})
-     }
-
+    const onChangeEmail = (e) => {
+        setEmail(e.nativeEvent.text)
+    }
+    
+    const onChangePassword = (e) => {
+        setPassword(e.nativeEvent.text)
+    }
+    
      const initialUser = async() => {
         if (!validateData()){
             return;
         }
         setLoadgin(true)
 
-        const resutl = await signInWithEmailAndPassword(formData.email, formData.password)
+        const resutl = await signInWithEmailAndPassword(email, password)
         
         setLoadgin(false)
         
-        if(!resutl.statusResponse){
-         seterroEmail(resutl.email)
-         seterroPassword(resutl.password)
+        if(!resutl.statusResponse){         
+         seterroPassword(resutl.error)
+         setPassword("")
          return
         }
         navigation.navigate("account")
@@ -46,12 +51,13 @@ export default function LoginForm() {
         seterroPassword("")
         let isValid = true
 
-        if(!validateEmail(formData.email)){
+        if(!validateEmail(email)){
            seterroEmail("You must enter an valid email.")
            isValid = false 
         }
         
-        if(isEmpty(formData.password)){
+
+        if(isEmpty(password)){
             seterroPassword("The filed password is in empty.")
             isValid = false 
         }
@@ -64,10 +70,10 @@ export default function LoginForm() {
             <Input 
                 containerStyle ={styles.input}
                 placeholder="Enter your email..."
-                onChange={(e) => onChange(e, "email")}
+                onChange={(e) => onChangeEmail(e)}
                 keyboardType="email-address"
                 errorMessage = {erroEmail}
-                defaultValue ={formData.email}
+                defaultValue ={email}
                 rightIcon = {
                     <Icon type="material-community"
                     name = "account-circle-outline"
@@ -78,9 +84,9 @@ export default function LoginForm() {
                 placeholder="Enter your password..."
                 password={true}
                 secureTextEntry= {!showPassword}
-                onChange={(e) => onChange(e, "password")}
+                onChange={(e) => onChangePassword(e)}
                 errorMessage = {erroPassword}
-                defaultValue ={formData.password}
+                defaultValue ={password}
                 rightIcon={
                 <Icon
                     type ="material-community"
@@ -100,9 +106,6 @@ export default function LoginForm() {
 
         </View>
     )
-}
-const defaultFormDataValue = () => {
-    return { email:"", password:""}
 }
 
 const styles = StyleSheet.create({
