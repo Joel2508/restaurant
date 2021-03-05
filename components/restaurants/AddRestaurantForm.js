@@ -2,35 +2,116 @@ import React, {useState} from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import  CountryPicker  from 'react-native-country-picker-modal'
 import { Button, Icon, Input } from 'react-native-elements'
+import {isEmpty} from 'lodash'
 import AddRestaurant from '../../screens/restaurants/AddRestaurant'
+import { validateEmail } from '../../util/helper'
 
 export default function AddRestaurantForm({toastRef, setLoading, navigation}) {
 
+    const [formData, setFormData] = useState(defaultValues())
+    const [errorName, setErrorName] = useState(null)
+    const [errorDescription, setErrorDescription] = useState(null)
+    const [errorEmail, setErrorEmail] = useState(null)
+    const [errorPhoneNumber, setErrorPhoneNumber] = useState(null)
+    const [errorAddres, setErrorAddres] = useState(null)    
+
     const AddRestaurant =() => {
-        console.log("Fuck Yeah....")
+    
+        console.log(formData)
+        if(!validateForm()){
+            return
+        }
+
+
+    }
+
+
+    const validateForm = ()=>{
+        if(isEmpty(formData.name)){
+            setErrorName("The filed name is empty.")
+            return false
+        }
+        if(isEmpty(formData.address)){
+            setErrorAddres("The filed address is empty.")
+            setErrorName("")
+            return false
+        }
+        if(isEmpty(formData.email)){
+            setErrorEmail("The filed email is empty.")
+            setErrorAddres("")
+           return false
+       }
+       if(!validateEmail(formData.email)){
+        setErrorEmail("Email is invalid check your email.")
+        
+        return
+      }
+       if(isEmpty(formData.phone)){
+        setErrorPhoneNumber("The filed phone number is empty.")
+        setErrorEmail("")
+        return false
+       }
+       if(isEmpty(formData.description)){
+            setErrorDescription("The filed description is empty.")
+            setErrorPhoneNumber("")
+            return false
+        }
+        setErrorDescription("")
+
+        return true
+
     }
 
     return (
         <View style={styles.viewContainer}>
-            <FormAdd/>
+            <FormAdd formData = {formData}
+            setFormData = {setFormData}
+            errorName ={errorName}
+            errorAddres = {errorAddres}
+            errorDescription = {errorDescription}
+            errorEmail = {errorEmail}
+            errorPhoneNumber = {errorPhoneNumber}/>
+
             <Button title = "Add Restaurant"
-            onPress = {AddRestaurant()}
+            onPress = {AddRestaurant}
             buttonStyle = {styles.btnAddRestaurant}/>
         </View>
     )
 }
 
 
-function  FormAdd() {
+const defaultValues = () => {
+    return {
+        email : "",
+        name : "", 
+        phone : "",
+        description: "",
+        address : "",
+        country : "DO",
+        callingCode : "809"
+    }
+}
+
+
+function  FormAdd({formData, setFormData, errorName, errorAddres, errorDescription, errorEmail, errorPhoneNumber}) {
+
     const [country, setCountry] = useState("DO")
     const [callingCode, setCallingCode] = useState("809")
     const [phone, setPhone] = useState("")
+
+
+    const onChange =(e, type) => {
+       setFormData({...formData, [type] : e.nativeEvent.text})
+    }
 
     return (
         <View style= {styles.viewForm}>
             
             <Input
               placeholder ="Name the restaurant..."
+              errorMessage = { errorName } 
+              defaultValue ={formData.name}
+              onChange = {(e) => onChange(e, "name")}
               rightIcon = {
                 <Icon
                   type = "material-community"
@@ -42,6 +123,9 @@ function  FormAdd() {
             />
             <Input
               placeholder ="Address the restaurant..."
+              errorMessage= {errorAddres}
+              defaultValue ={formData.address}
+              onChange = {(e) => onChange(e, "address")}
               rightIcon = {
                 <Icon
                   type = "material-community"
@@ -59,8 +143,11 @@ function  FormAdd() {
                      iconStyle={styles.icon}
                    />
                }
+               defaultValue ={formData.email}
+               onChange = {(e) => onChange(e, "email")} 
               keyboardType ="email-address"
               placeholder ="Email the restaurant..."
+              errorMessage = {errorEmail}
             />            
             <View style={styles.phoneView}>
                 <CountryPicker
@@ -72,12 +159,17 @@ function  FormAdd() {
                 countryCode={country}
                 onSelect ={(country) => {
                     setCountry(country.cca2)
+                    setFormData({...formData, "country" : country.cca2, "callingCode" : country.callingCode[0]})
                     setCallingCode(country.callingCode[0])
                 }}/>
                 <Input
                     placeholder = "WhatsApp the Restaurant..."
                     keyboardType="phone-pad"
                     containerStyle= {styles.inputPhone}
+                    errorMessage = {errorPhoneNumber}
+                    defaultValue ={formData.phone}
+                    onChange = {(e) => onChange(e, "phone")}
+      
                     rightIcon = {
                         <Icon
                           type = "material-community"                          
@@ -91,7 +183,10 @@ function  FormAdd() {
             <Input
                     placeholder = "Description for the Restaurant..."
                     multiline
+                    errorMessage = {errorDescription}
                     containerStyle= {styles.textArea}
+                    defaultValue ={formData.description}
+                    onChange = {(e) => onChange(e, "description")}
                     rightIcon = {
                         <Icon
                           type = "material-community"                          
@@ -103,7 +198,9 @@ function  FormAdd() {
                 ></Input> 
         </View>
     )
+  
 }
+        
 
 const styles = StyleSheet.create({
     viewContainer: {

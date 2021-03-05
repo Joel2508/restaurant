@@ -12,7 +12,6 @@ import { validateEmail } from '../../util/helper'
 export default function LoginForm() {
 
     const [showPassword, setShowPassword] = useState(false)
-    //const [formData, setFormData] = useState(defaultFormDataValue())
     const [email, setEmail] = useState(null)
     const [password, setPassword] = useState(null)
     const [erroEmail, seterroEmail] = useState("")
