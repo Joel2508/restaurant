@@ -43,7 +43,7 @@ export default function Navigation() {
             <Icon
                type="material-community"
                name = {iconName}
-               size = {22}
+               size = {27}
                color = {color}
             />
         )
