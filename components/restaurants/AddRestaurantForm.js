@@ -21,8 +21,6 @@ export default function AddRestaurantForm({toastRef, setLoading, navigation}) {
         if(!validateForm()){
             return
         }
-
-
     }
 
 

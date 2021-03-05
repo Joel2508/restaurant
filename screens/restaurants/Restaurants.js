@@ -5,19 +5,21 @@ import { useFocusEffect } from '@react-navigation/native'
 
 import Loading from '../../components/Loading'
 
-import { getCurrentUser, isUserLogged } from '../../util/action'
+import firebase from 'firebase/app'
+
+
 
 
 export default function Restaurants({navigation}) {
 
     const [userRestaurant, setUserRestaurant] = useState(null)
 
-    useFocusEffect(
-        useCallback(() => {
-            const user = getCurrentUser()
-            user ? setUserRestaurant(true) : setUserRestaurant(false)
-            },[])
-    )
+    useEffect(() => {
+        firebase.auth().onAuthStateChanged((userInfor) => {
+            userInfor ? setUserRestaurant(true) : setUserRestaurant(false)
+        })
+    }, [])
+    
 
     if(userRestaurant === null){
         return <Loading isVisible = {true} text = "Loading..." />
@@ -52,7 +54,7 @@ const styles = StyleSheet.create({
         shadowColor : "black",
         shadowOffset:  { width : 2, height : 2},
         shadowOpacity: 0.5,
-        bottom : -570
+        bottom : -580
         
       }
 })
