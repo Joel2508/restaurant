@@ -1,7 +1,6 @@
 import React, {useState, useCallback, useEffect} from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import { Icon } from 'react-native-elements'
-import { useFocusEffect } from '@react-navigation/native'
 
 import Loading from '../../components/Loading'
 
@@ -30,7 +29,7 @@ export default function Restaurants({navigation}) {
             <Text>Restaurant.....</Text>
             {
                 userRestaurant && (
-                    <Icon
+                    <Icon 
                         type ="material-community"
                         name="plus"
                         color ="#3c3c4c"
@@ -48,13 +47,12 @@ const styles = StyleSheet.create({
     viewBody: {
       flex: 1,
     },
-    iconContainer: {
+    iconContainer: {        
         position : "absolute",
-        right: 20,            
+        bottom : -680,
+        right: 10,            
         shadowColor : "black",
         shadowOffset:  { width : 2, height : 2},
-        shadowOpacity: 0.5,
-        bottom : -580
-        
+        shadowOpacity: 0.5,        
       }
 })

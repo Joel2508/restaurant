@@ -1,10 +1,11 @@
 import React, {useState} from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import { ScrollView, StyleSheet, Text, View } from 'react-native'
 import  CountryPicker  from 'react-native-country-picker-modal'
-import { Button, Icon, Input } from 'react-native-elements'
-import {isEmpty} from 'lodash'
+import { Avatar, Button, Icon, Input } from 'react-native-elements'
+import {isEmpty, map, size} from 'lodash'
 import AddRestaurant from '../../screens/restaurants/AddRestaurant'
-import { validateEmail } from '../../util/helper'
+import { loadImageFromGallery, validateEmail } from '../../util/helper'
+
 
 export default function AddRestaurantForm({toastRef, setLoading, navigation}) {
 
@@ -14,6 +15,8 @@ export default function AddRestaurantForm({toastRef, setLoading, navigation}) {
     const [errorEmail, setErrorEmail] = useState(null)
     const [errorPhoneNumber, setErrorPhoneNumber] = useState(null)
     const [errorAddres, setErrorAddres] = useState(null)    
+
+    const [imagesSelectd, setImageSelectd] = useState([])
 
     const AddRestaurant =() => {
     
@@ -69,7 +72,9 @@ export default function AddRestaurantForm({toastRef, setLoading, navigation}) {
             errorDescription = {errorDescription}
             errorEmail = {errorEmail}
             errorPhoneNumber = {errorPhoneNumber}/>
-
+            <UploadImagen toastRef ={toastRef}
+            imagesSelectd={imagesSelectd}
+            setImageSelectd = {setImageSelectd}/>
             <Button title = "Add Restaurant"
             onPress = {AddRestaurant}
             buttonStyle = {styles.btnAddRestaurant}/>
@@ -89,6 +94,8 @@ const defaultValues = () => {
         callingCode : "809"
     }
 }
+
+
 
 
 function  FormAdd({formData, setFormData, errorName, errorAddres, errorDescription, errorEmail, errorPhoneNumber}) {
@@ -199,6 +206,44 @@ function  FormAdd({formData, setFormData, errorName, errorAddres, errorDescripti
   
 }
         
+function  UploadImagen({toastRef, imagesSelectd, setImageSelectd}) {
+    const selectImage = async() => {    
+       const result = await loadImageFromGallery([4,3])
+       if(!result.status){
+           toastRef.current.show("Not select image", 3000)
+           return
+       }
+
+       setImageSelectd([...imagesSelectd, result.image])
+       console.log(imagesSelectd)
+    }
+    return (
+        <ScrollView
+        horizontal
+        style = {styles.viewImage}>
+            {
+                size(imagesSelectd) < 10 && (
+                    <Icon
+                    type ="material-community"
+                    name = "camera"
+                    color = "#3c3c4c"
+                    containerStyle = {styles.styleContainer}
+                    onPress = {selectImage}/>            
+                )
+            }
+            {
+                map(imagesSelectd, (imageRestaurant, index) => (
+                    <Avatar
+                    key={index}
+                    style={styles.miniatureImage}
+                    source= {{uri: imageRestaurant}}>
+        
+                    </Avatar>
+                ))             
+            }
+        </ScrollView>
+    )
+}
 
 const styles = StyleSheet.create({
     viewContainer: {
@@ -225,6 +270,28 @@ const styles = StyleSheet.create({
     },
     icon:{
         color: "#3c3c4c"
+    },
+    viewImage : {
+     flexDirection : "row",
+     marginHorizontal : 20,
+     marginTop : 30,
+    },
+    styleContainer : {
+     alignItems : "center",
+     justifyContent : "center",
+     marginRight : 10,
+     height : 80,
+     width : 80,
+     backgroundColor : "#7c7c7c",
+     borderRadius : 20,
+     
+    },
+    miniatureImage : {
+        width : 80,
+        height: 80,
+        marginRight: 10,
+        borderRadius: 100
+        
     }
 
 })
