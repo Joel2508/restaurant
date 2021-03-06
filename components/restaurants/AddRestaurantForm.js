@@ -2,9 +2,11 @@ import React, {useState} from 'react'
 import { ScrollView, StyleSheet, Text, View } from 'react-native'
 import  CountryPicker  from 'react-native-country-picker-modal'
 import { Avatar, Button, Icon, Input } from 'react-native-elements'
-import {isEmpty, map, size} from 'lodash'
+import {isEmpty, map, size, filter} from 'lodash'
 import AddRestaurant from '../../screens/restaurants/AddRestaurant'
 import { loadImageFromGallery, validateEmail } from '../../util/helper'
+import { Alert } from 'react-native'
+
 
 
 export default function AddRestaurantForm({toastRef, setLoading, navigation}) {
@@ -207,6 +209,30 @@ function  FormAdd({formData, setFormData, errorName, errorAddres, errorDescripti
 }
         
 function  UploadImagen({toastRef, imagesSelectd, setImageSelectd}) {
+    const removeImage = (image) => {
+       
+        Alert.alert(
+            "Delete Image",
+            "Are you want delete this image?",
+                [
+                    {
+                        text : "No",
+                        style : "Cancel"
+                    },
+                    {
+                        text : "Yes",
+                        onPress : () => {
+                            setImageSelectd(
+                                filter(imagesSelectd, (imageUrl) => imageUrl  !== image)
+                            )
+                        }
+                    }
+                ],
+                {
+                    cancelable : false
+                }
+        )
+    }
     const selectImage = async() => {    
        const result = await loadImageFromGallery([4,3])
        if(!result.status){
@@ -236,7 +262,8 @@ function  UploadImagen({toastRef, imagesSelectd, setImageSelectd}) {
                     <Avatar
                     key={index}
                     style={styles.miniatureImage}
-                    source= {{uri: imageRestaurant}}>
+                    source= {{uri: imageRestaurant}}
+                    onPress = {() => removeImage(imageRestaurant)}>
         
                     </Avatar>
                 ))             
