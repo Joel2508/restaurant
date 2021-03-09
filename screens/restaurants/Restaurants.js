@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
     },
     iconContainer: {        
         position : "absolute",
-        bottom : -680,
+        bottom : -580,
         right: 10,            
         shadowColor : "black",
         shadowOffset:  { width : 2, height : 2},

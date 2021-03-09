@@ -1,13 +1,16 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import { ScrollView, StyleSheet, Text, View } from 'react-native'
 import  CountryPicker  from 'react-native-country-picker-modal'
-import { Avatar, Button, Icon, Input } from 'react-native-elements'
+import { Avatar, Button, Icon, Image, Input } from 'react-native-elements'
 import {isEmpty, map, size, filter} from 'lodash'
 import AddRestaurant from '../../screens/restaurants/AddRestaurant'
-import { loadImageFromGallery, validateEmail } from '../../util/helper'
-import { Alert } from 'react-native'
+import { getCurrentLocation, loadImageFromGallery, validateEmail } from '../../util/helper'
+import { Alert, Dimensions } from 'react-native'
+import Modal from '../Modal'
 
+import MapView, { Marker,  UrlTile } from 'react-native-maps'
 
+const widtScreen = Dimensions.get("window").width
 
 export default function AddRestaurantForm({toastRef, setLoading, navigation}) {
 
@@ -17,12 +20,13 @@ export default function AddRestaurantForm({toastRef, setLoading, navigation}) {
     const [errorEmail, setErrorEmail] = useState(null)
     const [errorPhoneNumber, setErrorPhoneNumber] = useState(null)
     const [errorAddres, setErrorAddres] = useState(null)    
-
     const [imagesSelectd, setImageSelectd] = useState([])
+
+    const [isVisibleMap, setIsVisibleMap] = useState(false)
+    const [locationRestaurant, setLocationRestaurant] = useState(null)
 
     const AddRestaurant =() => {
     
-        console.log(formData)
         if(!validateForm()){
             return
         }
@@ -66,46 +70,182 @@ export default function AddRestaurantForm({toastRef, setLoading, navigation}) {
     }
 
     return (
-        <View style={styles.viewContainer}>
+        <ScrollView style={styles.viewContainer}>
+            <ImageRestaurant imageRestaurant ={imagesSelectd[0]}/>
+
             <FormAdd formData = {formData}
             setFormData = {setFormData}
             errorName ={errorName}
             errorAddres = {errorAddres}
             errorDescription = {errorDescription}
             errorEmail = {errorEmail}
-            errorPhoneNumber = {errorPhoneNumber}/>
+            errorPhoneNumber = {errorPhoneNumber}
+            setIsVisibleMap= {setIsVisibleMap}
+            locationRestaurant = {locationRestaurant}/>
+
             <UploadImagen toastRef ={toastRef}
             imagesSelectd={imagesSelectd}
             setImageSelectd = {setImageSelectd}/>
+
             <Button title = "Add Restaurant"
             onPress = {AddRestaurant}
             buttonStyle = {styles.btnAddRestaurant}/>
-        </View>
+
+            <MapRestaurant isVisibleMap = {isVisibleMap} setIsVisibleMap = {setIsVisibleMap}
+                           setLocationRestaurant = {setLocationRestaurant} toastRef = {toastRef}/>
+
+            
+        </ScrollView>
     )
 }
 
 
-const defaultValues = () => {
-    return {
-        email : "",
-        name : "", 
-        phone : "",
-        description: "",
-        address : "",
-        country : "DO",
-        callingCode : "809"
+
+function MapRestaurant({isVisibleMap, setIsVisibleMap, setLocationRestaurant, toastRef}) {
+
+    const [newRegion, setNewRegion] = useState(null)
+    useEffect(() => {
+        (async() => {
+            const response = await getCurrentLocation()
+            if(response.status){
+                setNewRegion(response.location)                         
+            }
+        })()
+    }, [])
+    const getMyLocation = () => {
+        setLocationRestaurant(newRegion)                
+        toastRef.current.show("Location save success", 3000)
+        setIsVisibleMap(false)
     }
+    return (
+        <Modal isVisible = {isVisibleMap} setVisible = {setIsVisibleMap}>
+            <View>
+                {
+                    newRegion && (
+                    <MapView 
+                        style = {styles.mapView}
+                        initialRegion = {newRegion}
+                        showsUserLocation
+                        onRegionChange = {(region) => setNewRegion(region)} 
+                        mapType = "satellite"                   
+                    >
+                     <Marker
+                     
+                     coordinate = {{
+                            latitude : newRegion.latitude,
+                            longitude : newRegion.longitude,
+                         }}
+                     draggable
+                     >
+                     </Marker>
+                    </MapView>
+                    )
+                }
+                <View style={styles.btnMapButtonView}>
+
+                    <Button title = "Cancel Location"
+                    containerStyle = {styles.containerStyleBtnMapCancel}
+                    onPress = {() => setIsVisibleMap(false)}
+                    buttonStyle = {styles.btnCancel}/>       
+
+                    <Button title = "Save Location"
+                    onPress = {getMyLocation}
+                    containerStyle = {styles.containerStyleBtnMapSave}
+                    buttonStyle = {styles.btnLocation}/>     
+
+                </View>
+            </View>
+        </Modal>
+    ) 
+}
+
+function ImageRestaurant({imageRestaurant}) {
+    return (
+        <View style = {styles.photView}>
+            <Image
+            style = {{width: widtScreen, height:200}}
+            source = {
+                imageRestaurant ? {uri: imageRestaurant} : require("../../assets/notimage.png")
+            }
+            />
+
+        </View>
+    )
+}
+
+        
+function  UploadImagen({toastRef, imagesSelectd, setImageSelectd}) {
+    const removeImage = (image) => {
+       
+        Alert.alert(
+            "Delete Image",
+            "Are you want delete this image?",
+                [
+                    {
+                        text : "No",
+                        style : "Cancel"
+                    },
+                    {
+                        text : "Yes",
+                        onPress : () => {
+                            setImageSelectd(
+                                filter(imagesSelectd, (imageUrl) => imageUrl  !== image)
+                            )
+                        }
+                    }
+                ],
+                {
+                    cancelable : false
+                }
+        )
+    }
+    const selectImage = async() => {    
+       const result = await loadImageFromGallery([4,3])
+       if(!result.status){
+           toastRef.current.show("Not select image", 3000)
+           return
+       }
+
+       setImageSelectd([...imagesSelectd, result.image])
+    }
+    return (
+        <ScrollView
+        horizontal
+        style = {styles.viewImage}>
+            {
+                size(imagesSelectd) < 10 && (
+                    <Icon
+                    type ="material-community"
+                    name = "camera"
+                    color = "#3c3c4c"
+                    containerStyle = {styles.styleContainer}
+                    onPress = {selectImage}/>            
+                )
+            }
+            {
+                map(imagesSelectd, (imageRestaurant, index) => (
+                    <Avatar
+                    key={index}
+                    style={styles.miniatureImage}
+                    source= {{uri: imageRestaurant}}
+                    onPress = {() => removeImage(imageRestaurant)}>
+        
+                    </Avatar>
+                ))             
+            }
+        </ScrollView>
+    )
 }
 
 
-
-
-function  FormAdd({formData, setFormData, errorName, errorAddres, errorDescription, errorEmail, errorPhoneNumber}) {
+function  FormAdd({formData, setFormData, errorName, errorAddres, errorDescription, errorEmail, 
+    errorPhoneNumber, setIsVisibleMap, locationRestaurant}) {
 
     const [country, setCountry] = useState("DO")
     const [callingCode, setCallingCode] = useState("809")
     const [phone, setPhone] = useState("")
 
+    
 
     const onChange =(e, type) => {
        setFormData({...formData, [type] : e.nativeEvent.text})
@@ -133,13 +273,12 @@ function  FormAdd({formData, setFormData, errorName, errorAddres, errorDescripti
               errorMessage= {errorAddres}
               defaultValue ={formData.address}
               onChange = {(e) => onChange(e, "address")}
-              rightIcon = {
-                <Icon
-                  type = "material-community"
-                  name = "map-marker-outline"
-                  iconStyle={styles.icon}
-                />
-            }
+              rightIcon = {{
+                type: "material-community",
+                name: "map-marker-outline",
+                iconStyle: locationRestaurant ? styles.icon : "#c2c2c2",
+                onPress: () => setIsVisibleMap(true)
+          }}
 
             />
             <Input
@@ -207,70 +346,20 @@ function  FormAdd({formData, setFormData, errorName, errorAddres, errorDescripti
     )
   
 }
-        
-function  UploadImagen({toastRef, imagesSelectd, setImageSelectd}) {
-    const removeImage = (image) => {
-       
-        Alert.alert(
-            "Delete Image",
-            "Are you want delete this image?",
-                [
-                    {
-                        text : "No",
-                        style : "Cancel"
-                    },
-                    {
-                        text : "Yes",
-                        onPress : () => {
-                            setImageSelectd(
-                                filter(imagesSelectd, (imageUrl) => imageUrl  !== image)
-                            )
-                        }
-                    }
-                ],
-                {
-                    cancelable : false
-                }
-        )
-    }
-    const selectImage = async() => {    
-       const result = await loadImageFromGallery([4,3])
-       if(!result.status){
-           toastRef.current.show("Not select image", 3000)
-           return
-       }
 
-       setImageSelectd([...imagesSelectd, result.image])
-       console.log(imagesSelectd)
+
+const defaultValues = () => {
+    return {
+        email : "",
+        name : "", 
+        phone : "",
+        description: "",
+        address : "",
+        country : "DO",
+        callingCode : "809"
     }
-    return (
-        <ScrollView
-        horizontal
-        style = {styles.viewImage}>
-            {
-                size(imagesSelectd) < 10 && (
-                    <Icon
-                    type ="material-community"
-                    name = "camera"
-                    color = "#3c3c4c"
-                    containerStyle = {styles.styleContainer}
-                    onPress = {selectImage}/>            
-                )
-            }
-            {
-                map(imagesSelectd, (imageRestaurant, index) => (
-                    <Avatar
-                    key={index}
-                    style={styles.miniatureImage}
-                    source= {{uri: imageRestaurant}}
-                    onPress = {() => removeImage(imageRestaurant)}>
-        
-                    </Avatar>
-                ))             
-            }
-        </ScrollView>
-    )
 }
+
 
 const styles = StyleSheet.create({
     viewContainer: {
@@ -294,6 +383,9 @@ const styles = StyleSheet.create({
         margin :"20%",
         backgroundColor : "#3c3c4c",
         borderRadius : 26
+    },
+    changeColorIcon : {
+        backgroundColor: "#7c7c7c"
     },
     icon:{
         color: "#3c3c4c"
@@ -319,6 +411,44 @@ const styles = StyleSheet.create({
         marginRight: 10,
         borderRadius: 100
         
-    }
+    },
 
+    photView: {
+        alignItems : "center",
+        height : 200,
+        marginBottom : 10
+    },
+    mapView:{
+        width :  "100%",
+        height: 600, 
+        borderRadius:26,
+    },
+    btnMapButtonView : {
+    flexDirection : "row",
+    justifyContent : "center",
+    marginTop : 10,
+    
+    },
+    containerStyleBtnMapCancel : {
+        paddingLeft : 5
+    },  
+    containerStyleBtnMapSave : {
+     paddingRight : 5
+    },
+    btnLocation : {     
+        width : 150,      
+        height : 50, 
+        backgroundColor : "#3c3c4c",
+        borderRadius :20,
+        marginLeft : 20,
+    
+    },
+    btnCancel : {  
+        width : 150,     
+        height : 50, 
+        backgroundColor : "#7c7c7c",
+        borderRadius :20,
+        marginRight : 20,
+ 
+    }
 })

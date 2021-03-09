@@ -17,6 +17,7 @@ export default function Modal({isVisible, setVisible,  children}) {
 
 const styles = StyleSheet.create({
     overLay:{
-        width : "90%"
+        width : "95%",
+        borderRadius : 26
     }
 })
