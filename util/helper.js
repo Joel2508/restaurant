@@ -48,6 +48,7 @@ export const getCurrentLocation = async() => {
 
      const position = await Location.getCurrentPositionAsync({})
 
+     
      const location = {
          latitude: position.coords.latitude,
          longitude: position.coords.longitude,
@@ -59,4 +60,30 @@ export const getCurrentLocation = async() => {
      response.location  = location 
      response.message = "OK"
      return response
+}
+
+export const geoLocationReveseUserStreet  = async(newRegion) => {
+    
+    const response = {status : false, city: "", name : "", country : "", street : ""};
+
+    const {status} = await Location.requestPermissionsAsync();
+    if (status !== 'granted') {
+        setErrorMsg('Access to Location denied');
+        return
+    }
+
+    const place = await Location.reverseGeocodeAsync({
+        latitude : newRegion.latitude,
+        longitude : newRegion.longitude
+    });
+
+    place.find( p => {
+        response.city = p.city,
+        response.name = p.name,
+        response.country = p.country,
+        response.street = p.street,
+        response.status = true
+    });    
+    console.log(response)
+    return response
 }

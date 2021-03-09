@@ -4,7 +4,7 @@ import  CountryPicker  from 'react-native-country-picker-modal'
 import { Avatar, Button, Icon, Image, Input } from 'react-native-elements'
 import {isEmpty, map, size, filter} from 'lodash'
 import AddRestaurant from '../../screens/restaurants/AddRestaurant'
-import { getCurrentLocation, loadImageFromGallery, validateEmail } from '../../util/helper'
+import { getCurrentLocation, loadImageFromGallery, validateEmail, geoLocationReveseUserStreet } from '../../util/helper'
 import { Alert, Dimensions } from 'react-native'
 import Modal from '../Modal'
 
@@ -34,6 +34,7 @@ export default function AddRestaurantForm({toastRef, setLoading, navigation}) {
 
 
     const validateForm = ()=>{
+        clearErrors()
         if(isEmpty(formData.name)){
             setErrorName("The filed name is empty.")
             return false
@@ -50,11 +51,10 @@ export default function AddRestaurantForm({toastRef, setLoading, navigation}) {
        }
        if(!validateEmail(formData.email)){
         setErrorEmail("Email is invalid check your email.")
-        
-        return
-      }
-       if(isEmpty(formData.phone)){
-        setErrorPhoneNumber("The filed phone number is empty.")
+        return false        
+       }
+       if(size(formData.phone) < 10){
+        setErrorPhoneNumber("You must enter a phone number the restaurant  that  10 digit.")
         setErrorEmail("")
         return false
        }
@@ -63,10 +63,31 @@ export default function AddRestaurantForm({toastRef, setLoading, navigation}) {
             setErrorPhoneNumber("")
             return false
         }
+
+        if(!locationRestaurant){
+            toastRef.current.show("You must put your that restaurant location", 3000)
+            return false
+        }
+        if(size(imagesSelectd) === 0){
+            toastRef.current.show("You must select one image for this restaurant", 3000)
+            return false
+        }
+
         setErrorDescription("")
 
         return true
 
+    }
+
+
+    const clearErrors =() => {
+        setErrorAddres(null)
+        setErrorDescription(null)
+        setErrorEmail(null)
+        setErrorName(null)
+        setErrorPhoneNumber(null) 
+        setLocationRestaurant(null)
+        setImageSelectd(null)    
     }
 
     return (
@@ -92,7 +113,7 @@ export default function AddRestaurantForm({toastRef, setLoading, navigation}) {
             buttonStyle = {styles.btnAddRestaurant}/>
 
             <MapRestaurant isVisibleMap = {isVisibleMap} setIsVisibleMap = {setIsVisibleMap}
-                           setLocationRestaurant = {setLocationRestaurant} toastRef = {toastRef}/>
+                           setLocationRestaurant = {setLocationRestaurant} toastRef = {toastRef} formData ={formData}/>
 
             
         </ScrollView>
@@ -101,9 +122,9 @@ export default function AddRestaurantForm({toastRef, setLoading, navigation}) {
 
 
 
-function MapRestaurant({isVisibleMap, setIsVisibleMap, setLocationRestaurant, toastRef}) {
+function MapRestaurant({isVisibleMap, setIsVisibleMap, setLocationRestaurant, toastRef, formData}) {
 
-    const [newRegion, setNewRegion] = useState(null)
+    const [newRegion, setNewRegion] = useState(null)    
     useEffect(() => {
         (async() => {
             const response = await getCurrentLocation()
@@ -112,8 +133,13 @@ function MapRestaurant({isVisibleMap, setIsVisibleMap, setLocationRestaurant, to
             }
         })()
     }, [])
-    const getMyLocation = () => {
-        setLocationRestaurant(newRegion)                
+    const getMyLocation = async() => {
+        setLocationRestaurant(newRegion)       
+        
+        const geoLocationReveseUser = await geoLocationReveseUserStreet(newRegion)
+        
+        const address = geoLocationReveseUser.country  + ', ' + geoLocationReveseUser.city + ', ' + geoLocationReveseUser.street 
+        formData.address = address
         toastRef.current.show("Location save success", 3000)
         setIsVisibleMap(false)
     }
