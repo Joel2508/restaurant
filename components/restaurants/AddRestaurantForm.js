@@ -137,14 +137,16 @@ function MapRestaurant({isVisibleMap, setIsVisibleMap, setLocationRestaurant, to
         setLocationRestaurant(newRegion)       
         
         const geoLocationReveseUser = await geoLocationReveseUserStreet(newRegion)
-        
         const address = geoLocationReveseUser.country  + ', ' + geoLocationReveseUser.city + ', ' + geoLocationReveseUser.street 
+        if(geoLocationReveseUser.message === ""){
+              address == ""
+        }
         formData.address = address
         toastRef.current.show("Location save success", 3000)
         setIsVisibleMap(false)
     }
     return (
-        <Modal isVisible = {isVisibleMap} setVisible = {setIsVisibleMap}>
+        <Modal isVisible = {isVisibleMap} setVisible = {setIsVisibleMap} children = {null}>
             <View>
                 {
                     newRegion && (
@@ -289,7 +291,7 @@ function  FormAdd({formData, setFormData, errorName, errorAddres, errorDescripti
                 <Icon
                   type = "material-community"
                   name = "home-outline"
-                  iconStyle={styles.icon}
+                  style={styles.icon}
                 />
             }
 
@@ -302,7 +304,7 @@ function  FormAdd({formData, setFormData, errorName, errorAddres, errorDescripti
               rightIcon = {{
                 type: "material-community",
                 name: "map-marker-outline",
-                iconStyle: locationRestaurant ? styles.icon : "#c2c2c2",
+                style: locationRestaurant ? styles.icon : "#c2c2c2",
                 onPress: () => setIsVisibleMap(true)
           }}
 
@@ -312,7 +314,7 @@ function  FormAdd({formData, setFormData, errorName, errorAddres, errorDescripti
                    <Icon
                      type = "material-community"
                      name = "at"
-                     iconStyle={styles.icon}
+                     style={styles.icon}
                    />
                }
                defaultValue ={formData.email}
@@ -346,7 +348,7 @@ function  FormAdd({formData, setFormData, errorName, errorAddres, errorDescripti
                         <Icon
                           type = "material-community"                          
                           name = "whatsapp"
-                          iconStyle={styles.icon}
+                          style={styles.icon}
                         />
                     }
      
@@ -363,7 +365,7 @@ function  FormAdd({formData, setFormData, errorName, errorAddres, errorDescripti
                         <Icon
                           type = "material-community"                          
                           name = "text-box-outline"
-                          iconStyle={styles.icon}
+                          style={styles.icon}
                         />
                     }
 

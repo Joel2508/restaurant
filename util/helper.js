@@ -1,7 +1,6 @@
 import * as Permissions from 'expo-permissions'
 import * as ImagePicker from  'expo-image-picker'
-import { Alert } from "react-native";
-
+import { Alert, Platform } from "react-native";
 import * as Location from 'expo-location'
 
 
@@ -64,26 +63,42 @@ export const getCurrentLocation = async() => {
 
 export const geoLocationReveseUserStreet  = async(newRegion) => {
     
-    const response = {status : false, city: "", name : "", country : "", street : ""};
+    const response = {status : false, city: "", name : "", country : "", street : "", message : ""};
 
     const {status} = await Location.requestPermissionsAsync();
     if (status !== 'granted') {
         setErrorMsg('Access to Location denied');
         return
     }
+    if(Platform.OS === "android"){
+        response.message = ""
+        response.street = ""
+        response.country = ""
+        response.name = ""
+        response.city = ""        
+    }
+    else{
+        try {        
 
-    const place = await Location.reverseGeocodeAsync({
-        latitude : newRegion.latitude,
-        longitude : newRegion.longitude
-    });
 
-    place.find( p => {
-        response.city = p.city,
-        response.name = p.name,
-        response.country = p.country,
-        response.street = p.street,
-        response.status = true
-    });    
-    console.log(response)
-    return response
+            const place = await Location.reverseGeocodeAsync({
+                latitude : newRegion.latitude,
+                longitude : newRegion.longitude
+            });
+        
+            place.find( p => {
+                response.city = p.city,
+                response.name = p.name,
+                response.country = p.country,
+                response.street = p.street,
+                response.status = true
+            });    
+                
+        } catch (error) {            
+            console.log(error)
+            return
+        }
+     }
+
+   return response
 }
