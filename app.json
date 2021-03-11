@@ -17,12 +17,19 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier" :  "com.joelarias.restaurants"
     },
     "android": {
+      "package" : "com.joelarias.restaurants",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
+      },
+      "config" :{
+        "googleMaps": {
+          "apiKey" : "AIzaSyA5_TGvI0qpmDL2lyEifMxjEmCl_be6pAs"
+        }
       },
       "permissions": [
         "CAMERA_ROLL",

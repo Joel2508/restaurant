@@ -9,32 +9,79 @@ import { Alert, Dimensions } from 'react-native'
 import Modal from '../Modal'
 
 import MapView, { Marker,  UrlTile } from 'react-native-maps'
+import { addDocumentWithoutId, getCurrentUser, uploadImage } from '../../util/action'
+
+import uuid from 'random-uuid-v4'
+import { getCountryCurrencyAsync } from 'react-native-country-picker-modal/lib/CountryService'
+
 
 const widtScreen = Dimensions.get("window").width
 
 export default function AddRestaurantForm({toastRef, setLoading, navigation}) {
-
+    
     const [formData, setFormData] = useState(defaultValues())
     const [errorName, setErrorName] = useState(null)
     const [errorDescription, setErrorDescription] = useState(null)
     const [errorEmail, setErrorEmail] = useState(null)
     const [errorPhoneNumber, setErrorPhoneNumber] = useState(null)
     const [errorAddres, setErrorAddres] = useState(null)    
+
     const [imagesSelectd, setImageSelectd] = useState([])
+
 
     const [isVisibleMap, setIsVisibleMap] = useState(false)
     const [locationRestaurant, setLocationRestaurant] = useState(null)
 
-    const AddRestaurant =() => {
+    const AddRestaurant = async() => {
     
         if(!validateForm()){
             return
         }
+
+        setLoading(true)
+
+        const responseUploadImage = await uploadImages()
+  
+        const restaurantObject = {
+            name: formData.name,
+            address : formData.address,
+            description : formData.description,
+            email: formData.email,
+            phone : formData.phone, 
+            callingCode : formData.callingCode,
+            location : locationRestaurant,
+            images : responseUploadImage,
+            rating: 0, 
+            raitingTotal : 0,
+            quantityVoiting: 0,
+            createA : new Date(),
+            createBY : getCurrentUser().uid           
+        }
+
+        const responseRestaurant = await addDocumentWithoutId("restaurants", restaurantObject)
+        setLoading(false)
+        
+        if(!responseRestaurant.statusResponse){
+          toastRef.current.show("Error to loading data.", 3000)
+          return
+        }        
+        navigation.navigate("restaurant")
     }
 
-
+    const uploadImages =  async() =>{
+        const urlImage = []
+        await Promise.all(
+            map(imagesSelectd, async(image) => {
+                const response = await uploadImage(image, "restaurants", uuid())
+                if(response.statusResponse){
+                    urlImage.push(response.url)
+                }
+            })
+        )
+        return urlImage
+    }
+    
     const validateForm = ()=>{
-        clearErrors()
         if(isEmpty(formData.name)){
             setErrorName("The filed name is empty.")
             return false
@@ -53,11 +100,11 @@ export default function AddRestaurantForm({toastRef, setLoading, navigation}) {
         setErrorEmail("Email is invalid check your email.")
         return false        
        }
-       if(size(formData.phone) < 10){
-        setErrorPhoneNumber("You must enter a phone number the restaurant  that  10 digit.")
-        setErrorEmail("")
-        return false
-       }
+    //    if(size(formData.phone) < 15){
+    //     setErrorPhoneNumber("You must enter a phone number the restaurant  that  10 digit.")
+    //     setErrorEmail("")
+    //     return false
+    //    }
        if(isEmpty(formData.description)){
             setErrorDescription("The filed description is empty.")
             setErrorPhoneNumber("")
@@ -87,7 +134,8 @@ export default function AddRestaurantForm({toastRef, setLoading, navigation}) {
         setErrorName(null)
         setErrorPhoneNumber(null) 
         setLocationRestaurant(null)
-        setImageSelectd(null)    
+        setImageSelectd([])    
+        setLoading(false)
     }
 
     return (

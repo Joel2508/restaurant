@@ -95,8 +95,8 @@ export const geoLocationReveseUserStreet  = async(newRegion) => {
             });    
                 
         } catch (error) {            
-            console.log(error)
-            return
+            response.message ="Error"
+            return response
         }
      }
 

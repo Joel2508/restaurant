@@ -1,0 +1,8 @@
+AIzaSyA5_TGvI0qpmDL2lyEifMxjEmCl_be6pAs
+
+
+
+Google Certificate Fingerprint:     2D:15:0B:E4:EE:48:A5:8C:6F:68:DC:F0:DD:BC:5B:6C:1D:0B:9C:7A
+Google Certificate Hash (SHA-1):    2D150BE4EE48A58C6F68DCF0DDBC5B6C1D0B9C7A
+Google Certificate Hash (SHA-256):  64EF4CC39BFE38C25EE7FE5AB04871DB4255508FF32AC1CE7CF931EC2CA8CD60
+Facebook Key Hash:                  LRUL5O5IpYxvaNzw3bxbbB0LnHo=
