@@ -101,18 +101,6 @@ export const updatePassword = async(password) => {
     return result     
 }
 
-export const addDocumentWithoutId = async(collection, data) => {
-    const result = { statusResponse: true, error: null }    
-    try {
-        await db.collection(collection).add(data)
-    } catch (error) {
-        result.statusResponse = false
-        result.error = error
-    }
-    return result     
-}
-
-
 export const reauthencate = async(password) => {
     const result = { statusResponse: true, error: null }
     const user = getCurrentUser()    
@@ -125,6 +113,39 @@ export const reauthencate = async(password) => {
         result.error = error
     }
     return result    
+}
+
+
+
+export const addDocumentWithoutId = async(collection, data) => {
+    const result = { statusResponse: true, error: null }    
+    try {
+        await db.collection(collection).add(data)
+    } catch (error) {
+        result.statusResponse = false
+        result.error = error
+    }
+    return result     
+}
+
+export const getRestaurant   = async(LimiteRestaurants) => {
+    const result = { statusResponse: true, error: null, restaurants: [], startRestaurants: null}    
+    try {
+        const response =  await db.collection("restaurants").orderBy("createA", "desc").limit(LimiteRestaurants).get()
+
+        if(response.docs.length > 0){
+           result.startRestaurants = response.docs[response.docs.length - 1]
+        }
+        response.forEach((docs) => {
+            const restaurant = docs.data()
+            restaurant.id = docs.id
+            result.restaurants.push(restaurant)
+        } )
+    } catch (error) {
+        result.statusResponse = false
+        result.error = error
+    }
+    return result     
 }
 
 
