@@ -11,6 +11,8 @@ import firebase from 'firebase/app'
 import { getMoreRestaurant, getRestaurant } from '../../util/action'
 import ListRestaurants from '../../components/restaurants/ListRestaurants'
 
+
+
 export default function Restaurants({navigation}) {
 
     const [startRestaurants, setStartRestaurants] = useState(null)
