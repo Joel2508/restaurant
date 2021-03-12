@@ -7,6 +7,7 @@ import Restaurants from '../../screens/restaurants/Restaurants'
 
 import  {size} from 'loadsh'
 import { formatPhone } from '../../util/helper'
+import { getMoreRestaurant } from '../../util/action'
 
 export default function ListRestaurants({restaurants, navigation, handleLoadMore}) {
     return (
@@ -31,8 +32,13 @@ function Restaurant({restaurant, navigation, handleLoadMore}) {
     const  {id, images, name, address, description, phone, email, callingCode} =  restaurant.item
     const  imageRestaurant  = images[0]
 
+
+    const goRestaurant = () =>{
+        navigation.navigate("onerestaurant", {id, name})
+    }
+
     return (
-        <TouchableOpacity>
+        <TouchableOpacity onPress={goRestaurant}>
             <View style ={styles.viewRestaurants}>
                 <View style = {styles.viewimage}>
                     <Image
