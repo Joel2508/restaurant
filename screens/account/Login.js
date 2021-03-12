@@ -10,7 +10,7 @@ export default function Login() {
     return (
        <KeyboardAwareScrollView>
            <Image
-           source = {require("../../assets/restaurante1.png")}
+           source = {require("../../assets/images.png")}
            resizeMode = 'stretch'
            style = {styles.image}>
            </Image>
@@ -41,9 +41,9 @@ function CreateAccount (props) {
 
 const styles = StyleSheet.create({
     image: {           
-      height: 150,
-      width: "90%",    
-      marginBottom: 20,
+      height: 200,
+      width: "105%",    
+      marginBottom: 10,
       margin : 20, 
       alignItems : "flex-end"               
     },

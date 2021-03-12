@@ -148,4 +148,26 @@ export const getRestaurant   = async(LimiteRestaurants) => {
     return result     
 }
 
+export const getMoreRestaurant   = async(LimiteRestaurants, startRestaurants) => {
+    const result = { statusResponse: true, error: null, restaurants: [], startRestaurants: null}    
+    try {
+        const response =  await db.collection("restaurants")
+        .orderBy("createA", "desc")
+        .startAfter(startRestaurants.data().createA)
+        .limit(LimiteRestaurants)
+        .get()
+        if(response.docs.length > 0){
+           result.startRestaurants = response.docs[response.docs.length - 1]
+        }
+        response.forEach((docs) => {
+            const restaurant = docs.data()
+            restaurant.id = docs.id
+            result.restaurants.push(restaurant)
+        } )
+    } catch (error) {
+        result.statusResponse = false
+        result.error = error
+    }
+    return result     
+}
 

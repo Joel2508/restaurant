@@ -38,7 +38,7 @@ export const fileToBlob = async(path) => {
 }
 
 export const getCurrentLocation = async() => {
-     const response = { status: false, location: null, message : "" }
+     const response = { status: false, location: null, message : "", city : "", name:  ""}
      const resultPermission = await Permissions.askAsync(Permissions.LOCATION)
      if(resultPermission.status === "denied"){
          response.message = "You must permission for location."
@@ -46,8 +46,7 @@ export const getCurrentLocation = async() => {
      }
 
      const position = await Location.getCurrentPositionAsync({})
-
-     
+          
      const location = {
          latitude: position.coords.latitude,
          longitude: position.coords.longitude,
@@ -102,3 +101,53 @@ export const geoLocationReveseUserStreet  = async(newRegion) => {
 
    return response
 }
+ 
+export const  _reverseGeocode = async(lat, lng) => {
+    let location = {};
+    if (Platform.OS === 'ios') {
+      const res = await Location.reverseGeocodeAsync({latitude: lat.toFixed(6), longitude: lng.toFixed(6)});
+      location = res[0];
+    } else {
+      const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${["AIzaSyA5_TGvI0qpmDL2lyEifMxjEmCl_be6pAs"]}`);
+      const responseJson = await response.json();
+      console.log(responseJson)
+      location = await _setLocationFromAddressComponents(responseJson.results[0]);
+    }
+    return location;
+  }
+ 
+  function _setLocationFromAddressComponents (addressComponents) { 
+    const location = {
+      street_number: null,
+      route: null,
+      name: null,
+      city: null,
+      region: null,
+      postalCode: null,
+    };
+    addressComponents.forEach((a) => {
+      switch(a.types[0]) {
+        case 'street_number':
+          location.street_number = a.short_name;
+          break;
+        case 'route':
+          location.route = a.short_name;
+          break;
+        case 'locality':
+          location.city = a.short_name;
+          break;
+        case 'administrative_area_level_1':
+          location.region = a.short_name;
+          break;
+        case 'postal_code':
+          location.postalCode = a.short_name;
+          break;
+      }
+    });
+    location.name = `${location.street_number} ${location.route}`;
+    return location;
+  }
+
+  export const formatPhone = (callingCode, phone) => {
+      return `(${callingCode})-${phone.substr(0,3)}-${phone.substr(3,4)}`
+  }

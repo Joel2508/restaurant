@@ -12,7 +12,7 @@ export default function UserGuest() {
         centerContent = {true}
         style = {styles.viewBody}>
             <Image 
-                source = {require("../../assets/restaurante1.png")}
+                source = {require("../../assets/images.png")}
                 resizeMode = "contain"                
                 style = {styles.image}
             />

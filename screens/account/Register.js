@@ -8,7 +8,7 @@ export default function Register() {
     return (
         <KeyboardAwareScrollView style={styles.containerScrollView}>
            <Image
-            source = {require("../../assets/restaurante1.png")}
+            source = {require("../../assets/images.png")}
             resizeMode = 'stretch'
             style = {styles.image}>
            </Image>
@@ -20,10 +20,10 @@ export default function Register() {
 
 const styles = StyleSheet.create({
     image: {           
-        height: 150,
-        width: "90%",    
-        marginBottom: 20,
-        margin : 20, 
+        height: 200,
+        width: "105%",    
+        marginBottom: 10,
+        margin : 30, 
         alignItems : "flex-end"               
       },
       containerScrollView :{

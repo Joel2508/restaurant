@@ -4,7 +4,7 @@ import  CountryPicker  from 'react-native-country-picker-modal'
 import { Avatar, Button, Icon, Image, Input } from 'react-native-elements'
 import {isEmpty, map, size, filter} from 'lodash'
 import AddRestaurant from '../../screens/restaurants/AddRestaurant'
-import { getCurrentLocation, loadImageFromGallery, validateEmail, geoLocationReveseUserStreet } from '../../util/helper'
+import { getCurrentLocation, loadImageFromGallery, validateEmail, geoLocationReveseUserStreet, _reverseGeocode } from '../../util/helper'
 import { Alert, Dimensions } from 'react-native'
 import Modal from '../Modal'
 
@@ -100,11 +100,11 @@ export default function AddRestaurantForm({toastRef, setLoading, navigation}) {
         setErrorEmail("Email is invalid check your email.")
         return false        
        }
-    //    if(size(formData.phone) < 15){
-    //     setErrorPhoneNumber("You must enter a phone number the restaurant  that  10 digit.")
-    //     setErrorEmail("")
-    //     return false
-    //    }
+       if(size(formData.phone) < 10){
+        setErrorPhoneNumber("You must enter a phone number the restaurant  that  10 digit.")
+        setErrorEmail("")
+        return false
+       }
        if(isEmpty(formData.description)){
             setErrorDescription("The filed description is empty.")
             setErrorPhoneNumber("")
@@ -184,11 +184,8 @@ function MapRestaurant({isVisibleMap, setIsVisibleMap, setLocationRestaurant, to
     const getMyLocation = async() => {
         setLocationRestaurant(newRegion)       
         
-        const geoLocationReveseUser = await geoLocationReveseUserStreet(newRegion)
-        const address = geoLocationReveseUser.country  + ', ' + geoLocationReveseUser.city + ', ' + geoLocationReveseUser.street 
-        if(geoLocationReveseUser.message === ""){
-              address == ""
-        }
+        const geoLocationReveseUser = await _reverseGeocode(newRegion.latitude, newRegion.longitude)
+        const address = geoLocationReveseUser.country   + geoLocationReveseUser.city  + geoLocationReveseUser.street 
         formData.address = address
         toastRef.current.show("Location save success", 3000)
         setIsVisibleMap(false)

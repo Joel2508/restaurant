@@ -6,22 +6,28 @@ import { Image, ListItem } from 'react-native-elements'
 import Restaurants from '../../screens/restaurants/Restaurants'
 
 import  {size} from 'loadsh'
+import { formatPhone } from '../../util/helper'
 
-export default function ListRestaurants({restaurants, navigation}) {
+export default function ListRestaurants({restaurants, navigation, handleLoadMore}) {
     return (
         <View>
             <FlatList
              data = {restaurants}
              keyExtractor ={(item, index) => index.toString()}
+             onEndReachedThreshold ={0.5}
+             onEndReached= {handleLoadMore}
              renderItem = {(restaurant) => (
-                 <Restaurant restaurant ={restaurant} navigation = {navigation}/>
+                 <Restaurant 
+                 restaurant ={restaurant} 
+                 navigation = {navigation} 
+                 />
              )}
             />
         </View>
     )
 }
 
-function Restaurant({restaurant, navigation}) {
+function Restaurant({restaurant, navigation, handleLoadMore}) {
     const  {id, images, name, address, description, phone, email, callingCode} =  restaurant.item
     const  imageRestaurant  = images[0]
 
@@ -30,7 +36,8 @@ function Restaurant({restaurant, navigation}) {
             <View style ={styles.viewRestaurants}>
                 <View style = {styles.viewimage}>
                     <Image
-                        resizeMethod= "cover"
+                        resizeMethod = "resize"
+
                         PlaceholderContent  ={<ActivityIndicator color = "#fff"/>}
                         source = {{uri: imageRestaurant}}
                         style = {styles.image}>
@@ -39,7 +46,7 @@ function Restaurant({restaurant, navigation}) {
             <View>
                     <Text style ={styles.restaurantStyleTitle}>{name}</Text>
                     <Text style ={styles.restaurantStyleAddrees}>{address}</Text>
-                    <Text style ={styles.restaurantStyleInforPhone}>{callingCode}-{phone}</Text>
+                    <Text style ={styles.restaurantStyleInforPhone}>{formatPhone(callingCode, phone)}</Text>
                     <Text style ={styles.restaurantStyleEmail}>{email}</Text>
                     <Text style ={styles.restaurantStyleDecription}>                        
                         {                    
@@ -60,18 +67,22 @@ const styles = StyleSheet.create({
         margin : 10
     },
     viewimage: {
-        marginRight : 15
+        marginRight : 20
     },
     image : {
         width : 100,
         height : 100,
+        borderRadius : 15
     },
     restaurantStyleTitle : {
-        fontWeight : "bold"
+        fontWeight : "bold",
+        fontSize : 18
+     
     },
     restaurantStyleAddrees : {
-        paddingTop : 2,
-        color : "grey"
+        paddingTop : 5,
+        fontSize: 14,
+        color : "black"
     },
     restaurantStyleDecription : {
         paddingTop: 2,

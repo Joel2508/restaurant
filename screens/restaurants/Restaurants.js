@@ -8,7 +8,7 @@ import Loading from '../../components/Loading'
 
 import {size} from  'loadsh'
 import firebase from 'firebase/app'
-import { getRestaurant } from '../../util/action'
+import { getMoreRestaurant, getRestaurant } from '../../util/action'
 import ListRestaurants from '../../components/restaurants/ListRestaurants'
 
 export default function Restaurants({navigation}) {
@@ -17,7 +17,7 @@ export default function Restaurants({navigation}) {
     const [restaurants, setRestaurants] = useState([])
     const [loading, setLoading] = useState(false)
     
-    const limiteRestaurants = 7
+    const limiteRestaurants = 5
 
     
     const [userRestaurant, setUserRestaurant] = useState(null)
@@ -40,7 +40,18 @@ export default function Restaurants({navigation}) {
           setLoading(false)
         }, [])
     )
-
+  const handleLoadMore = async() => {
+    if(!startRestaurants){
+        return
+    }
+    setLoading(true)
+    const response = await getMoreRestaurant(limiteRestaurants, startRestaurants)
+    if(response.statusResponse){
+        setStartRestaurants(response.startRestaurants)
+        setRestaurants([...restaurants, ...response.restaurants])
+    }    
+    setLoading(false)
+}
     if(userRestaurant === null){
         return <Loading isVisible = {true} text = "Loading..." />
     }
@@ -49,7 +60,9 @@ export default function Restaurants({navigation}) {
         <View style={styles.viewBody}>
             {
                 size(restaurants) > 0 ? (
-                   <ListRestaurants restaurants ={restaurants} navigation={navigation} />
+                   <ListRestaurants restaurants ={restaurants} 
+                   navigation={navigation} 
+                   handleLoadMore = {handleLoadMore} />
 
                 ) : (
                   <View style = {styles.notFoundViewStyle}>
