@@ -18,7 +18,7 @@ export default function Restaurants({navigation}) {
     const [startRestaurants, setStartRestaurants] = useState(null)
     const [restaurants, setRestaurants] = useState([])
     const [loading, setLoading] = useState(false)
-    
+     
     const limiteRestaurants = 5
 
     
@@ -31,15 +31,17 @@ export default function Restaurants({navigation}) {
     }, [])
 
     useFocusEffect (
-        useCallback (async() => {
-          setLoading(true)
-          const response = await getRestaurant(limiteRestaurants)
-        
-          if(response.statusResponse){
-              setStartRestaurants(response.startRestaurants)
-              setRestaurants(response.restaurants)
-          }
-          setLoading(false)
+        useCallback (() => {
+            async function getData(){
+                setLoading(true)
+                const response = await getRestaurant(limiteRestaurants)              
+                if(response.statusResponse){
+                    setStartRestaurants(response.startRestaurants)
+                    setRestaurants(response.restaurants)
+                }
+                setLoading(false)      
+            }
+            getData()
         }, [])
     )
   const handleLoadMore = async() => {
