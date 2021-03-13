@@ -11,6 +11,7 @@ import Loading from '../../components/Loading'
 import MapRestaurant from '../../components/restaurants/MapRestaurant'
 import { getDocumentById } from '../../util/action'
 import { formatPhone } from '../../util/helper'
+import ListReviews from '../../components/restaurants/ListReviews'
 
 const widthDimension = Dimensions.get("window").width
 
@@ -58,6 +59,11 @@ export default function Restaurant({navigation, route}) {
                 email ={restaurant.email}
                 phone = {formatPhone(restaurant.callingCode, restaurant.phone)}
                 />
+            <ListReviews
+             navigation = {navigation}
+             idRestaurant = {restaurant.id}
+             
+            />
         </ScrollView>
     )
 }
