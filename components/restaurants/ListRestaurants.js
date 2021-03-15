@@ -2,12 +2,11 @@ import React from 'react'
 import { TouchableOpacity } from 'react-native'
 import { ActivityIndicator } from 'react-native'
 import { StyleSheet,FlatList, Text, View } from 'react-native'
-import { Image, ListItem } from 'react-native-elements'
-import Restaurants from '../../screens/restaurants/Restaurants'
+import { Image } from 'react-native-elements'
+
 
 import  {size} from 'loadsh'
 import { formatPhone } from '../../util/helper'
-import { getMoreRestaurant } from '../../util/action'
 
 export default function ListRestaurants({restaurants, navigation, handleLoadMore}) {
     return (
