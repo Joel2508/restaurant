@@ -1,10 +1,10 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState} from 'react'
 import { Alert, Dimensions, ScrollView } from 'react-native'
 import { StyleSheet, Text, View } from 'react-native'
 import { Icon, ListItem, Rating } from 'react-native-elements'
 import MapView from 'react-native-maps'
 
-
+import { useFocusEffect } from '@react-navigation/native'
 import {map} from 'loadsh'
 import CarouselImage from '../../components/CarouselImage'
 import Loading from '../../components/Loading'
@@ -23,18 +23,37 @@ export default function Restaurant({navigation, route}) {
 
     navigation.setOptions({title: name})
 
-    useEffect(() => {
 
-        (async ()=>{
-            const response = await getDocumentById("restaurants", id)
-            if(response.statusResponse){
-               setRestaurant(response.document)
-            }else{
-                setRestaurant({})
-                Alert.alert("Error loading the restaurant.")
-            }
-        } )()
-    }, [])
+    useFocusEffect(
+        React.useCallback(() => {
+            (async()=>{
+                const response = await getDocumentById("restaurants", id)
+                if(response.statusResponse){
+                   setRestaurant(response.document)
+                }else{
+                    setRestaurant({})
+                    Alert.alert("Error loading the restaurant.")
+                }
+            })()
+        }, [id])    
+    )
+    // useFocusEffect(
+    //     useCallback(() => {
+    //         (async()=>{
+    //             const response = await getDocumentById("restaurants", id)
+    //             if(response.statusResponse){
+    //                setRestaurant(response.document)
+    //             }else{
+    //                 setRestaurant({})
+    //                 Alert.alert("Error loading the restaurant.")
+    //             }
+    //         })()
+    //     }, [])
+    
+    // )
+
+    
+
 
     if(!restaurant){
       return <Loading isVisible={true} text ="Loading"/>

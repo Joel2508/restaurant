@@ -183,3 +183,14 @@ export const getDocumentById = async(collection, id) => {
     }
     return result     
 }
+
+export const updateDocumentRestaurantById = async(collection, id, data) => {
+    const result = { statusResponse: true, error: null, document: null}    
+    try {
+        await db.collection(collection).doc(id).update(data)
+    } catch (error) {
+        result.statusResponse = false
+        result.error = error
+    }
+    return result     
+}
