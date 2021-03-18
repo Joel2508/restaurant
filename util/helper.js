@@ -6,8 +6,8 @@ import * as Location from 'expo-location'
 
 
 export function validateEmail(email) {
-    const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return re.test(email)
+  const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  return re.test(email)
 }
 
 export const loadImageFromGallery = async(array) => {
@@ -92,7 +92,6 @@ export const geoLocationReveseUserStreet  = async(newRegion) => {
                 response.street = p.street,
                 response.status = true
             });    
-                
         } catch (error) {            
             response.message ="Error"
             return response
@@ -110,7 +109,6 @@ export const  _reverseGeocode = async(lat, lng) => {
     } else {
       const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${["AIzaSyA5_TGvI0qpmDL2lyEifMxjEmCl_be6pAs"]}`);
       const responseJson = await response.json();
-      console.log(responseJson)
       location = await _setLocationFromAddressComponents(responseJson.results[0]);
     }
     return location;

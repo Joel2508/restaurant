@@ -32,7 +32,7 @@ export default function UserGuest() {
 const styles = StyleSheet.create({
     viewBody : {
         marginHorizontal : 40, 
-        marginVertical:40
+        marginVertical:40,
     },
     image : {
         height: 150,

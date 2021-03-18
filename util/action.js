@@ -209,9 +209,41 @@ export const getRestaurantReviewById   = async(id) => {
             result.reviews.push(review)
         } )
     } catch (error) {
-        console.log(error)
         result.statusResponse = false
         result.error = error
     }
     return result     
 }
+export const getFavorite = async(idRestaurant) => {
+    const result = { statusResponse: true, error: null, isFavorite : false }    
+    try {
+       const response =  await db.collection("favorite")
+       .where("idRestaurant", "==", idRestaurant)
+       .where("idUser", "==", getCurrentUser().uid)
+       .get()
+       result.isFavorite = response.docs.length > 0       
+    } catch (error) {
+        result.statusResponse = false
+        result.error = error
+    }
+    return result     
+}
+
+export const removeFavorite = async(idRestaurant) => {
+    const result = { statusResponse: true, error: null }    
+    try {
+       const response =  await db.collection("favorite")
+       .where("idRestaurant", "==", idRestaurant)
+       .where("idUser", "==", getCurrentUser().uid)
+       .get()
+        response.forEach(async (doc)=> {
+          const favoriteId = doc.id
+          await db.collection("favorite").doc(favoriteId).delete()
+        })
+    } catch (error) {
+        result.statusResponse = false
+        result.error = error
+    }
+    return result     
+}
+

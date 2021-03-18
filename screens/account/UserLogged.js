@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
 
     container: {
         minHeight : "100%",
-        
+        backgroundColor : "#fff"
     },
     btnLogOut : {
       marginTop : 30,

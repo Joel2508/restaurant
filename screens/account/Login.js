@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
       alignItems : "flex-end"               
     },
     contain : {
-        marginHorizontal : 40
+        marginHorizontal : 40,
     },
     divider : {
         backgroundColor: '#3c3c4c',

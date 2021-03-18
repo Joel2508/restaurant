@@ -13,7 +13,7 @@ export default function ListRestaurants({restaurants, navigation, handleLoadMore
         <View>
             <FlatList
              data = {restaurants}
-             keyExtractor ={(item, index) => index.toString()}
+             keyExtractor ={(index) => index.toString()}
              onEndReachedThreshold ={0.5}
              onEndReached= {handleLoadMore}
              renderItem = {(restaurant) => (
@@ -27,9 +27,10 @@ export default function ListRestaurants({restaurants, navigation, handleLoadMore
     )
 }
 
-function Restaurant({restaurant, navigation, handleLoadMore}) {
+function Restaurant({restaurant, navigation}) {
     const  {id, images, name, address, description, phone, email, callingCode} =  restaurant.item
-    const  imageRestaurant  = images[0]
+    const  imageRestaurant  = images[3]
+
 
 
     const goRestaurant = () =>{

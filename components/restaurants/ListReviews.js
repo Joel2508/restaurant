@@ -1,38 +1,70 @@
-import React,{useState, useEffect} from 'react'
+import React,{useState, useCallback, useRef} from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 
 import firebase from 'firebase/app'
 import { Avatar, Button, Rating } from 'react-native-elements'
 import AddReviewRestaurant from '../../screens/restaurants/AddReviewRestaurant'
 import Modal from '../Modal'
+import ModalImage from '../ModalImage'
 
 import {map, size} from 'loadsh'
 
+import Toast from 'react-native-easy-toast'
 import moment  from 'moment/min/moment-with-locales'
 import { getRestaurantReviewById } from '../../util/action'
 import { ActivityIndicator } from 'react-native'
+import { useFocusEffect } from '@react-navigation/native'
+import SelectImageUserReview from './SelectImageUserReview'
 moment.locale("es")
 
 export default function ListReviews({navigation, idRestaurant}) {
 
     const [reviews, setReviews] = useState([])
-    
+    const toast = useRef()
+    useFocusEffect(
+      useCallback(() => {
+          (async() => {
+              const response = await getRestaurantReviewById(idRestaurant)
+              if (response.statusResponse) {
+                  setReviews(response.reviews)
+              }
+          })()
+      }, [])
+  )
 
-    useEffect(() => {
-      (async()=>{
-        const response  = await getRestaurantReviewById(idRestaurant)
-        if(response.statusResponse){
-          setReviews(response.reviews)
-        }
-      })()
-    }, [])
+     
+
 
     const [userLogger, setUserLogger] = useState(false)
     const [renderComponent, setRenderComponent] = useState(null)
+    const [renderComponentImage, setRenderComponentImage] = useState(null)
     const [shoModal, setshoModal] = useState(false)
+    const [isImage, setIsImage] = useState(false)
+
     firebase.auth().onAuthStateChanged((user) => {
        user ? setUserLogger(true) : setUserLogger(false)
     })
+
+
+    const SelectImageUser = (key, avatarUser)=> {
+
+      if(key === "SelectImageUser"){
+        if(avatarUser !== null ){
+
+          setRenderComponentImage(
+            <SelectImageUserReview avatarUser={avatarUser}/>
+           )   
+        }
+        else{
+          toast.current.show("Not Image the user enabled", 3000)
+          return
+        }
+  
+       
+      }
+      setshoModal(true)
+    }
+
     const selectComponent = (key) => {
       if(key === "AddReviewRestaurant"){
         setRenderComponent(
@@ -50,6 +82,7 @@ export default function ListReviews({navigation, idRestaurant}) {
 
     return (
      <View>
+       <Toast ref={toast} position = "top" opacity={1.5}/>
          {
              userLogger ? (
                <Button
@@ -74,6 +107,7 @@ export default function ListReviews({navigation, idRestaurant}) {
                
              )
          }
+            
      <Modal isVisible ={shoModal} setVisible ={setshoModal}>
           {
             renderComponent
@@ -83,17 +117,25 @@ export default function ListReviews({navigation, idRestaurant}) {
        size(reviews) > 0 && (
 
          map(reviews, reviewDocument =>  (        
-           <ReviewComment  reviewComment={reviewDocument} />
+           <ReviewComment  reviewComment={reviewDocument} SelectImageUser={SelectImageUser} toast ={toast} />
          ))
        )
      }
+     <View>
+     <ModalImage isVisible={shoModal} setVisible = {setshoModal}>
+        {
+          renderComponentImage
+        }
+     </ModalImage>
+     </View>
     </View>
     )
 }
 
-function ReviewComment ( { reviewComment } ) {
-     const {title, review, createA, avatarUser, raiting} = reviewComment
-     const createReview = new Date(createA.seconds * 10000)
+function ReviewComment ( { reviewComment, SelectImageUser } ) {
+     const {title, createA, avatarUser, rating, comment} = reviewComment
+     const createReview = new Date(createA.seconds * 1000)
+
 
      return (
        <View style = {styles.viewReview}>
@@ -102,6 +144,7 @@ function ReviewComment ( { reviewComment } ) {
            size ="large"
            rounded
            containerStyle = {styles.imageAvatarUser}
+           onPress ={() => SelectImageUser("SelectImageUser", avatarUser)}
            source = {
              avatarUser ? {uri : avatarUser} : require("../../assets/avatar1.png")
            }
@@ -109,9 +152,10 @@ function ReviewComment ( { reviewComment } ) {
          </View>
         <View style={styles.viewInfo}>
           <Text style={styles.reviewTitle}>{title}</Text>
-          <Text style={styles.reviewComment}>{review}</Text>
+          <Text style={styles.reviewTitleComment}>{comment}</Text>
           <Rating imageSize={15}
-            startingValue={raiting}
+          
+            startingValue={rating}
             readonly/>
             <Text style={styles.reviwDate}>{moment(createReview).format("LLL")}</Text>
         </View>
@@ -158,11 +202,6 @@ const styles = StyleSheet.create({
     reviewTitle: {
       fontWeight: "bold"
     },
-    reviewComment : {
-       paddingTop : 2,
-       color : "gray",
-       marginBottom : 5
-    },
     reviwDate : {
       marginTop : 5,
       color : "gray",
@@ -170,5 +209,9 @@ const styles = StyleSheet.create({
       position : "absolute",
       right:0,
       bottom :0
+    },
+    reviewTitleComment: {
+      color : "gray",
+
     }
 })

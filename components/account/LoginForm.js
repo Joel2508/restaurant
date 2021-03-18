@@ -112,14 +112,15 @@ const styles = StyleSheet.create({
         flex : 1,
         alignItems: 'center',
         justifyContent : "center",
-        marginTop : 30
+        marginTop : 30,
     
     },
     form:{
         marginTop: 20,
     },
     input : {
-        width: "100%"
+        width: "100%",        
+
     }, 
     button: {        
        backgroundColor : '#3c3c4c',

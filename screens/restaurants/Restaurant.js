@@ -1,31 +1,43 @@
-import React, {useState} from 'react'
+import React, {useState, useRef, useEffect, useCallback} from 'react'
 import { Alert, Dimensions, ScrollView } from 'react-native'
 import { StyleSheet, Text, View } from 'react-native'
 import { Icon, ListItem, Rating } from 'react-native-elements'
-import MapView from 'react-native-maps'
+
+import Toast from 'react-native-easy-toast'
+
+import firebase from 'firebase/app'
 
 import { useFocusEffect } from '@react-navigation/native'
 import {map} from 'loadsh'
 import CarouselImage from '../../components/CarouselImage'
 import Loading from '../../components/Loading'
 import MapRestaurant from '../../components/restaurants/MapRestaurant'
-import { getDocumentById } from '../../util/action'
+import { addDocumentWithoutId, getCurrentUser, getDocumentById, getFavorite, removeFavorite } from '../../util/action'
 import { formatPhone } from '../../util/helper'
 import ListReviews from '../../components/restaurants/ListReviews'
 
 const widthDimension = Dimensions.get("window").width
 
 export default function Restaurant({navigation, route}) {
+
+    const toastRef = useRef()
     const [activeSlide, setActiveSlide] = useState(0)
 
     const {id, name} = route.params 
+    navigation.setOptions({title: name})
     const [restaurant, setRestaurant] = useState(null)
 
-    navigation.setOptions({title: name})
+    const [isFavorite, setIsFavorite] = useState(false)
 
+    const [userLogger, setUserLogger] = useState(false)
+    const [loading, setLoading] = useState(false)
+
+    firebase.auth().onAuthStateChanged((user) => {
+        user ? setUserLogger(true) : setUserLogger(false)
+    })
 
     useFocusEffect(
-        React.useCallback(() => {
+        useCallback(() => {
             (async()=>{
                 const response = await getDocumentById("restaurants", id)
                 if(response.statusResponse){
@@ -35,25 +47,51 @@ export default function Restaurant({navigation, route}) {
                     Alert.alert("Error loading the restaurant.")
                 }
             })()
-        }, [id])    
+        }, [])    
     )
-    // useFocusEffect(
-    //     useCallback(() => {
-    //         (async()=>{
-    //             const response = await getDocumentById("restaurants", id)
-    //             if(response.statusResponse){
-    //                setRestaurant(response.document)
-    //             }else{
-    //                 setRestaurant({})
-    //                 Alert.alert("Error loading the restaurant.")
-    //             }
-    //         })()
-    //     }, [])
-    
-    // )
 
-    
+    useEffect(() => {
+        (async ()=> {
+            if(userLogger && restaurant){
+                const response = await getFavorite(restaurant.id)
+                response.statusResponse && setIsFavorite(response.isFavorite)
+            }
+        })()
+    }, [userLogger, restaurant])
 
+
+    const remoteFavoriteDoc = async()=> {
+        setLoading(true)
+        const response = await removeFavorite(restaurant.id)
+        setLoading(false)     
+
+        if(response.statusResponse){
+            toastRef.current.show("Restaurant delete the favorite.", 3000)
+        }else{
+            toastRef.current.show("Not can't delete the restaurant that favorite.", 3000)
+        }
+    }
+    
+    const addFavorite = async() =>{
+        if(!userLogger){
+            toastRef.current.show("If want add this new restaurant you must at log in.", 3000)
+            return
+        }
+        setLoading(true) 
+        const response = await addDocumentWithoutId("favorite", {
+            idUser : getCurrentUser().uid,
+            idRestaurant : restaurant.id
+        })
+        if(response.statusResponse){
+            setIsFavorite(true)
+            toastRef.current.show("This restaurant is in favorite.", 3000)
+        }
+        else{
+            toastRef.current.show("Not cant add the restaurant to favorite.", 3000)
+        }
+        setLoading(false)
+
+    }
 
     if(!restaurant){
       return <Loading isVisible={true} text ="Loading"/>
@@ -66,6 +104,15 @@ export default function Restaurant({navigation, route}) {
                 width = {widthDimension}
                 activieSlide = {activeSlide}
                 setActiveSlide = {setActiveSlide}/>
+            <View style ={styles.viewFavorite}>
+                <Icon type="material-community" name = {isFavorite ? "heart" : "heart-outline"}
+                onPress = {isFavorite ?  remoteFavoriteDoc : addFavorite }
+                color =  "#3c3c4c"
+                size = {35}
+                underlayColor = "transparent"/>
+
+            </View>
+
             
             <TitleRestaurant
                 name = {restaurant.name}
@@ -83,11 +130,15 @@ export default function Restaurant({navigation, route}) {
              idRestaurant = {restaurant.id}
              
             />
+            <Toast ref={toastRef} position="center" opacity ={0.5}/>            
+            <Loading isVisible ={loading} text = "Wait please..."/>
         </ScrollView>
     )
 }
 
 function RestaurantInfo({name, location, address, email, phone}) {
+    
+
     const listInfo = [
         {text: address, iconName: "map-marker-outline"},
         {text: email, iconName: "at"},        
@@ -100,8 +151,8 @@ function RestaurantInfo({name, location, address, email, phone}) {
                 Information the restaurant
             </Text>
           <MapRestaurant 
-            location ={location}
             name ={name}
+            location ={location}
             height={150}/>
             {
                 map(listInfo, (item, index) => (
@@ -176,5 +227,14 @@ const styles = StyleSheet.create({
     containerList : {
        borderBottomColor : "#7c7c7c",
        borderBottomWidth : 1 
+    },
+    viewFavorite : {
+        position: "absolute",
+        top: 0 ,
+        right : 0,
+        backgroundColor : "#fff",
+        borderBottomLeftRadius : 100,
+        padding : 5,
+        paddingLeft : 15
     }
 })

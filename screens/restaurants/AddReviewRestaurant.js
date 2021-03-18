@@ -2,7 +2,7 @@ import React, {useState, useRef} from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import {AirbnbRating, Button, Input} from 'react-native-elements'
 import Toast from 'react-native-easy-toast'
-import { ScrollView } from 'react-native'
+
 
 import {isEmpty} from 'loadsh'
 import Loading from '../../components/Loading'
@@ -13,7 +13,7 @@ export default function AddReviewRestaurant({navigation, setshoModal, idRestaura
 
     const toast = useRef()
 
-    const [rating, setRating] = useState(0)
+    const [rating, setRating] = useState(null)
 
     const [title, setTitle] = useState("")
     const [errorTitle, seterrorTitle] = useState(null)
@@ -35,6 +35,7 @@ export default function AddReviewRestaurant({navigation, setshoModal, idRestaura
               idRestaurant: idRestaurant,
               title,
               rating, 
+              comment: review,
               createA: new Date(),              
           }
 
@@ -104,8 +105,8 @@ export default function AddReviewRestaurant({navigation, setshoModal, idRestaura
                     count = {5}
                     reviews = {["Bad", "Average", "Good", "Very Good", "Excellent"]}
                     defaultRating = {0}
-                    onFinishRating = {(value) => setRating(value)}                    
-                    size = {35} >
+                    size = {35} 
+                    onFinishRating = {(value) => setRating(value)}>
                </AirbnbRating>
                <Input
                  placeholder = "Title..."

@@ -3,8 +3,8 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native'
 import  CountryPicker  from 'react-native-country-picker-modal'
 import { Avatar, Button, Icon, Image, Input } from 'react-native-elements'
 import {isEmpty, map, size, filter} from 'lodash'
-import AddRestaurant from '../../screens/restaurants/AddRestaurant'
-import { getCurrentLocation, loadImageFromGallery, validateEmail, geoLocationReveseUserStreet, _reverseGeocode } from '../../util/helper'
+
+import { getCurrentLocation, loadImageFromGallery, validateEmail, geoLocationReveseUserStreet } from '../../util/helper'
 import { Alert, Dimensions } from 'react-native'
 import Modal from '../Modal'
 
@@ -25,6 +25,8 @@ export default function AddRestaurantForm({toastRef, setLoading, navigation}) {
     const [errorEmail, setErrorEmail] = useState(null)
     const [errorPhoneNumber, setErrorPhoneNumber] = useState(null)
     const [errorAddres, setErrorAddres] = useState(null)    
+    const [imageArray, setsImageArray] = useState()
+
 
     const [imagesSelectd, setImageSelectd] = useState([])
 
@@ -96,12 +98,12 @@ export default function AddRestaurantForm({toastRef, setLoading, navigation}) {
             setErrorAddres("")
            return false
        }
-       if(!validateEmail(formData.email)){
-        setErrorEmail("Email is invalid check your email.")
-        return false        
+       if(!validateEmail(formData.email)) {
+            setErrorEmail("Email is invalid check your email.")
+            return false        
        }
-       if(size(formData.phone) < 10){
-        setErrorPhoneNumber("You must enter a phone number the restaurant  that  10 digit.")
+       if(size(formData.phone) < 6){
+        setErrorPhoneNumber("You must enter a phone number the restaurant  that  6 digit.")
         setErrorEmail("")
         return false
        }
@@ -154,7 +156,9 @@ export default function AddRestaurantForm({toastRef, setLoading, navigation}) {
 
             <UploadImagen toastRef ={toastRef}
             imagesSelectd={imagesSelectd}
-            setImageSelectd = {setImageSelectd}/>
+            setImageSelectd = {setImageSelectd}
+            imageArray = {imageArray}
+            setsImageArray = {setsImageArray}/>
 
             <Button title = "Add Restaurant"
             onPress = {AddRestaurant}
@@ -184,8 +188,8 @@ function MapRestaurant({isVisibleMap, setIsVisibleMap, setLocationRestaurant, to
     const getMyLocation = async() => {
         setLocationRestaurant(newRegion)       
         
-        const geoLocationReveseUser = await _reverseGeocode(newRegion.latitude, newRegion.longitude)
-        const address = geoLocationReveseUser.country   + geoLocationReveseUser.city  + geoLocationReveseUser.street 
+        const geoLocationReveseUser = await geoLocationReveseUserStreet(newRegion)
+        const address = geoLocationReveseUser.country + ' '  + ' ' + geoLocationReveseUser.city + ' ' +  ' ' + geoLocationReveseUser.street 
         formData.address = address
         toastRef.current.show("Location save success", 3000)
         setIsVisibleMap(false)
@@ -247,7 +251,22 @@ function ImageRestaurant({imageRestaurant}) {
 }
 
         
-function  UploadImagen({toastRef, imagesSelectd, setImageSelectd}) {
+function  UploadImagen({toastRef, imagesSelectd, setImageSelectd, imageArray, setsImageArray}) {
+
+
+    const selectImage = async() => {    
+        const result = await loadImageFromGallery([4,3])
+        if(!result.status){
+            toastRef.current.show("Not select image", 3000)
+            return
+        }
+
+        if(imagesSelectd === 0){
+            setsImageArray(result.image)
+        }
+        setImageSelectd([...imagesSelectd, imageArray])
+     }
+
     const removeImage = (image) => {
        
         Alert.alert(
@@ -272,15 +291,7 @@ function  UploadImagen({toastRef, imagesSelectd, setImageSelectd}) {
                 }
         )
     }
-    const selectImage = async() => {    
-       const result = await loadImageFromGallery([4,3])
-       if(!result.status){
-           toastRef.current.show("Not select image", 3000)
-           return
-       }
-
-       setImageSelectd([...imagesSelectd, result.image])
-    }
+    
     return (
         <ScrollView
         horizontal

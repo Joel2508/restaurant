@@ -107,7 +107,7 @@ export default function AccountOptions({user, toastRef, setReloadUser}) {
                     </ListItem>
                 ))
             }
-            <Modal isVisible = {shoModal} setVisible ={setshoModal}>
+            <Modal isVisible = {shoModal} setVisible ={setshoModal} isImage={false}>
                 {
                     renderComponent
                 }

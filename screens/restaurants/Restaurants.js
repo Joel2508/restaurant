@@ -30,6 +30,9 @@ export default function Restaurants({navigation}) {
         })
     }, [])
 
+
+
+
     useFocusEffect (
         useCallback (() => {
             async function getData(){
@@ -96,6 +99,7 @@ export default function Restaurants({navigation}) {
 const styles = StyleSheet.create({
     viewBody: {
       flex: 1,
+      backgroundColor : "#fff"
     },
     iconContainer: {        
         position : "absolute",
