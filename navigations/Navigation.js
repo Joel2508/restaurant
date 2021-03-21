@@ -23,7 +23,7 @@ export default function Navigation() {
                 iconName = "silverware-fork-knife"                
                 break;
             case "favorites":
-                iconName = "star-outline"                
+                iconName = "heart-outline"                
                 break;
             case "account":
                 iconName = "account-circle-outline"                

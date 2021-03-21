@@ -3,6 +3,7 @@ import * as firebase from 'firebase'
 import 'firebase/firestore'
 import { fileToBlob } from './helper'
 
+import {map} from 'loadsh'
 const db = firebase.firestore(firebaseApp)
 
 
@@ -132,7 +133,7 @@ export const getRestaurant   = async(LimiteRestaurants) => {
     const result = { statusResponse: true, error: null, restaurants: [], startRestaurants: null}    
     try {
         const response =  await db.collection("restaurants").orderBy("createA", "desc").limit(LimiteRestaurants).get()
-
+        console.log(response.docs)
         if(response.docs.length > 0){
            result.startRestaurants = response.docs[response.docs.length - 1]
         }
@@ -217,7 +218,7 @@ export const getRestaurantReviewById   = async(id) => {
 export const getFavorite = async(idRestaurant) => {
     const result = { statusResponse: true, error: null, isFavorite : false }    
     try {
-       const response =  await db.collection("favorite")
+       const response =  await db.collection("favorites")
        .where("idRestaurant", "==", idRestaurant)
        .where("idUser", "==", getCurrentUser().uid)
        .get()
@@ -232,14 +233,41 @@ export const getFavorite = async(idRestaurant) => {
 export const removeFavorite = async(idRestaurant) => {
     const result = { statusResponse: true, error: null }    
     try {
-       const response =  await db.collection("favorite")
+       const response =  await db.collection("favorites")
        .where("idRestaurant", "==", idRestaurant)
        .where("idUser", "==", getCurrentUser().uid)
        .get()
         response.forEach(async (doc)=> {
           const favoriteId = doc.id
-          await db.collection("favorite").doc(favoriteId).delete()
+          await db.collection("favorites").doc(favoriteId).delete()
         })
+    } catch (error) {
+        result.statusResponse = false
+        result.error = error
+    }
+    return result     
+}
+
+export const getFavorites = async() => {
+    const result = { statusResponse: true, error: null, favorites : [] }    
+    try {
+       const response =  await db.collection("favorites")
+       .where("idUser", "==", getCurrentUser().uid)
+       .get()
+       const restaurantsId = []
+        response.forEach(async (doc)=> {
+          const favorites = doc.data()
+          restaurantsId.push(favorites.idRestaurant)          
+        })
+
+        await Promise.all(
+            map(restaurantsId, async(restaurantId)=> {
+                const responseRestaurantArray =await getDocumentById("restaurants", restaurantId)
+                if(responseRestaurantArray.statusResponse){
+                    result.favorites.push(responseRestaurantArray.document)
+                }
+            })
+        )
     } catch (error) {
         result.statusResponse = false
         result.error = error

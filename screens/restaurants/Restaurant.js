@@ -38,16 +38,16 @@ export default function Restaurant({navigation, route}) {
 
     useFocusEffect(
         useCallback(() => {
-            (async()=>{
+            (async ()=> {
                 const response = await getDocumentById("restaurants", id)
                 if(response.statusResponse){
                    setRestaurant(response.document)
                 }else{
                     setRestaurant({})
                     Alert.alert("Error loading the restaurant.")
-                }
+                }        
             })()
-        }, [])    
+        }, [])
     )
 
     useEffect(() => {
@@ -78,9 +78,9 @@ export default function Restaurant({navigation, route}) {
             return
         }
         setLoading(true) 
-        const response = await addDocumentWithoutId("favorite", {
+        const response = await addDocumentWithoutId("favorites", {
             idUser : getCurrentUser().uid,
-            idRestaurant : restaurant.id
+            idRestaurant : restaurant.id, location : restaurant.location
         })
         if(response.statusResponse){
             setIsFavorite(true)

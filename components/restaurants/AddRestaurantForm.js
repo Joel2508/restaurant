@@ -25,7 +25,6 @@ export default function AddRestaurantForm({toastRef, setLoading, navigation}) {
     const [errorEmail, setErrorEmail] = useState(null)
     const [errorPhoneNumber, setErrorPhoneNumber] = useState(null)
     const [errorAddres, setErrorAddres] = useState(null)    
-    const [imageArray, setsImageArray] = useState()
 
 
     const [imagesSelectd, setImageSelectd] = useState([])
@@ -156,9 +155,7 @@ export default function AddRestaurantForm({toastRef, setLoading, navigation}) {
 
             <UploadImagen toastRef ={toastRef}
             imagesSelectd={imagesSelectd}
-            setImageSelectd = {setImageSelectd}
-            imageArray = {imageArray}
-            setsImageArray = {setsImageArray}/>
+            setImageSelectd = {setImageSelectd}/>
 
             <Button title = "Add Restaurant"
             onPress = {AddRestaurant}
@@ -204,7 +201,7 @@ function MapRestaurant({isVisibleMap, setIsVisibleMap, setLocationRestaurant, to
                         initialRegion = {newRegion}
                         showsUserLocation
                         onRegionChange = {(region) => setNewRegion(region)} 
-                        mapType = "satellite"                   
+                        mapType = "none"                   
                     >
                      <Marker
                      
@@ -251,7 +248,7 @@ function ImageRestaurant({imageRestaurant}) {
 }
 
         
-function  UploadImagen({toastRef, imagesSelectd, setImageSelectd, imageArray, setsImageArray}) {
+function  UploadImagen({toastRef, imagesSelectd, setImageSelectd}) {
 
 
     const selectImage = async() => {    
@@ -261,10 +258,7 @@ function  UploadImagen({toastRef, imagesSelectd, setImageSelectd, imageArray, se
             return
         }
 
-        if(imagesSelectd === 0){
-            setsImageArray(result.image)
-        }
-        setImageSelectd([...imagesSelectd, imageArray])
+        setImageSelectd([...imagesSelectd, result.image])
      }
 
     const removeImage = (image) => {

@@ -39,7 +39,7 @@ export default function ListReviews({navigation, idRestaurant}) {
     const [renderComponent, setRenderComponent] = useState(null)
     const [renderComponentImage, setRenderComponentImage] = useState(null)
     const [shoModal, setshoModal] = useState(false)
-    const [isImage, setIsImage] = useState(false)
+    
 
     firebase.auth().onAuthStateChanged((user) => {
        user ? setUserLogger(true) : setUserLogger(false)
