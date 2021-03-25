@@ -80,7 +80,7 @@ export default function Navigation() {
                 <Tab.Screen
                     name="topRestaurants"
                     component ={TopRestaurantsStack}
-                    options = {{title : "Top 5"}}
+                    options = {{title : "Top 10"}}
                 />
                 <Tab.Screen
                     name="account"

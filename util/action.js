@@ -133,7 +133,6 @@ export const getRestaurant   = async(LimiteRestaurants) => {
     const result = { statusResponse: true, error: null, restaurants: [], startRestaurants: null}    
     try {
         const response =  await db.collection("restaurants").orderBy("createA", "desc").limit(LimiteRestaurants).get()
-        console.log(response.docs)
         if(response.docs.length > 0){
            result.startRestaurants = response.docs[response.docs.length - 1]
         }
@@ -254,17 +253,13 @@ export const getFavorites = async() => {
        const response =  await db.collection("favorites")
        .where("idUser", "==", getCurrentUser().uid)
        .get()
-       const restaurantsId = []
-        response.forEach(async (doc)=> {
-          const favorites = doc.data()
-          restaurantsId.push(favorites.idRestaurant)          
-        })
-
         await Promise.all(
-            map(restaurantsId, async(restaurantId)=> {
-                const responseRestaurantArray =await getDocumentById("restaurants", restaurantId)
-                if(responseRestaurantArray.statusResponse){
-                    result.favorites.push(responseRestaurantArray.document)
+            map(response.docs, async(doc)=> {
+                const favorite = doc.data()
+                console.log(doc)
+                const responseRestaurants =await getDocumentById("restaurants", favorite.idRestaurant)                
+                if(responseRestaurants.statusResponse){
+                    result.favorites.push(responseRestaurants.document)
                 }
             })
         )
@@ -274,4 +269,24 @@ export const getFavorites = async() => {
     }
     return result     
 }
+
+export const getTopRestaurant = async(limit) => {
+    const result = { statusResponse: true, error: null, restaurants : [] }    
+    try {
+       const response =  await db.collection("restaurants")
+       .orderBy("rating", "desc")
+       .limit(limit)
+       .get()
+       response.forEach((doc) => {
+           const restaurant = doc.data()
+           restaurant.id  = doc.id
+           result.restaurants.push(restaurant)
+       })
+    } catch (error) {
+        result.statusResponse = false
+        result.error = error
+    }
+    return result     
+}
+
 

@@ -39,6 +39,7 @@ export default function ListReviews({navigation, idRestaurant}) {
     const [renderComponent, setRenderComponent] = useState(null)
     const [renderComponentImage, setRenderComponentImage] = useState(null)
     const [shoModal, setshoModal] = useState(false)
+    const [shoModalImage, setshoModalImage] = useState(false)
     
 
     firebase.auth().onAuthStateChanged((user) => {
@@ -50,7 +51,6 @@ export default function ListReviews({navigation, idRestaurant}) {
 
       if(key === "SelectImageUser"){
         if(avatarUser !== null ){
-
           setRenderComponentImage(
             <SelectImageUserReview avatarUser={avatarUser}/>
            )   
@@ -62,7 +62,7 @@ export default function ListReviews({navigation, idRestaurant}) {
   
        
       }
-      setshoModal(true)
+      setshoModalImage(true)
     }
 
     const selectComponent = (key) => {
@@ -122,7 +122,7 @@ export default function ListReviews({navigation, idRestaurant}) {
        )
      }
      <View>
-     <ModalImage isVisible={shoModal} setVisible = {setshoModal}>
+     <ModalImage isVisible={shoModalImage} setVisible = {setshoModalImage}>
         {
           renderComponentImage
         }

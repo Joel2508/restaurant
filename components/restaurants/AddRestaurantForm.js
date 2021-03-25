@@ -201,7 +201,7 @@ function MapRestaurant({isVisibleMap, setIsVisibleMap, setLocationRestaurant, to
                         initialRegion = {newRegion}
                         showsUserLocation
                         onRegionChange = {(region) => setNewRegion(region)} 
-                        mapType = "none"                   
+                        mapType = "satellite"                   
                     >
                      <Marker
                      
