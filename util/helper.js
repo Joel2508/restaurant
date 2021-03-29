@@ -1,6 +1,6 @@
 import * as Permissions from 'expo-permissions'
 import * as ImagePicker from  'expo-image-picker'
-import { Alert, Platform } from "react-native";
+import { Alert, Platform, Linking } from "react-native";
 import * as Location from 'expo-location'
 
 
@@ -149,3 +149,24 @@ export const  _reverseGeocode = async(lat, lng) => {
   export const formatPhone = (callingCode, phone) => {
       return `(${callingCode})-${phone.substr(0,3)}-${phone.substr(3,4)}`
   }
+
+  export const callNumber = (phoneNumber)=>{
+    Linking.openURL(`tel:${phoneNumber}`)
+  }
+
+  export const sendWhastApp = (phoneNumber, tex)=>{
+    const link = `https://wa.me/${phoneNumber}?text=${tex}`
+    Linking.canOpenURL(link).then((suppoted) => {
+      if(!suppoted){
+        Alert.alert("Please install WhatsApp for send message")
+        return
+      }
+      return Linking.openURL(link)
+    }) 
+  }
+
+  
+  export const sendEmail = (to, subject, body)=>{
+    Linking.openURL(`mailto:${to}?subjecr=${subject}&body=${body}`)
+  }
+

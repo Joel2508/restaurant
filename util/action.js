@@ -3,9 +3,13 @@ import * as firebase from 'firebase'
 import 'firebase/firestore'
 import { fileToBlob } from './helper'
 
+import {FireSQL} from  'firesql'
+
 import {map} from 'loadsh'
 const db = firebase.firestore(firebaseApp)
 
+
+const firesql = new FireSQL (firebase.firestore(), {includeId : "id"})
 
 
 export const isUserLogged = () =>{
@@ -288,5 +292,17 @@ export const getTopRestaurant = async(limit) => {
     }
     return result     
 }
+
+export const searchRestaurant = async(search) => {
+    const result = { statusResponse: true, error: null, restaurants : [] }    
+    try {
+        result.restaurants = await firesql.query(`SELECT * FROM restaurants WHERE name LIKE  '${search}%'  `)
+    } catch (error) {
+        result.statusResponse = false
+        result.error = error
+    }
+    return result     
+}
+
 
 
