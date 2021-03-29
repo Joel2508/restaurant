@@ -13,7 +13,7 @@ import CarouselImage from '../../components/CarouselImage'
 import Loading from '../../components/Loading'
 import MapRestaurant from '../../components/restaurants/MapRestaurant'
 import { addDocumentWithoutId, getCurrentUser, getDocumentById, getFavorite, removeFavorite } from '../../util/action'
-import { formatPhone } from '../../util/helper'
+import { callNumber, formatPhone, sendEmail, sendWhastApp } from '../../util/helper'
 import ListReviews from '../../components/restaurants/ListReviews'
 
 const widthDimension = Dimensions.get("window").width
@@ -21,6 +21,7 @@ const widthDimension = Dimensions.get("window").width
 export default function Restaurant({navigation, route}) {
 
     const toastRef = useRef()
+    const [currentUser, setCurrentUser] = useState(null)
     const [activeSlide, setActiveSlide] = useState(0)
 
     const {id, name} = route.params 
@@ -34,6 +35,7 @@ export default function Restaurant({navigation, route}) {
 
     firebase.auth().onAuthStateChanged((user) => {
         user ? setUserLogger(true) : setUserLogger(false)
+        setCurrentUser(user)
     })
 
     useFocusEffect(
@@ -123,7 +125,9 @@ export default function Restaurant({navigation, route}) {
                 location ={restaurant.location}
                 address = {restaurant.address}
                 email ={restaurant.email}
-                phone = {formatPhone(restaurant.callingCode, restaurant.phone)}
+                phone = {formatPhone(restaurant.phone)}
+                currentUser={currentUser}
+                phoneNotFormat = {restaurant.phone}
                 />
             <ListReviews
              navigation = {navigation}
@@ -136,14 +140,38 @@ export default function Restaurant({navigation, route}) {
     )
 }
 
-function RestaurantInfo({name, location, address, email, phone}) {
+function RestaurantInfo({name, location, address, email, phone, currentUser, phoneNotFormat}) {
     
 
     const listInfo = [
-        {text: address, iconName: "map-marker-outline"},
-        {text: email, iconName: "at"},        
-        {text: phone, iconName: "phone"},
+        { type: "addres", text: address, iconLeft: "map-marker-outline"},
+        {type: "email", text: email, iconLeft: "at"},        
+        { type: "phone", text: phone, iconLeft: "phone", iconRigth : "whatsapp"},
     ]
+
+    const actionLeft = (text)=> {
+         if(text === "phone"){
+             callNumber(phone)
+         }else if (text === "email"){
+             if(currentUser){
+                sendEmail(email, "Interesting", `I am ${currentUser.displayName}, I am interested in your services`)
+             }else {
+                sendEmail(email, "Interesting", "I am interested in your services")
+             }
+         }
+    }
+
+    const actionRigth = (text)=> {
+        if(text === "phone") {
+            phone = `+1${phoneNotFormat}`
+            console.log(phone)
+            if(currentUser){
+                sendWhastApp(phone, "Interesting " + ` I am ${currentUser.displayName}, I am interested in your services`)
+             }else {
+                sendWhastApp(phone, "Interesting " + ` I am interested in your services`)
+             }
+        }
+    }
 
     return (
         <View style ={styles.viewRestaurantInfo}>
@@ -161,11 +189,25 @@ function RestaurantInfo({name, location, address, email, phone}) {
                         style = {styles.containerList}>                        
                         <Icon
                             type ="material-community"
-                            name = {item.iconName}
-                            color ="#3c3c4c"/>                        
+                            name = {item.iconLeft}
+                            color ="#3c3c4c"
+                            onPress ={
+                                () => actionLeft(item.type)
+                            }/>                        
                         <ListItem.Content>
                             <ListItem.Title>{item.text}</ListItem.Title>
                         </ListItem.Content>
+                        {
+                            item.iconRigth && (
+                            <Icon
+                                type ="material-community"
+                                name = {item.iconRigth}
+                                color ="#3c3c4c"
+                                onPress ={
+                                    ()=> actionRigth(item.type)
+                                }/>                            
+                            )
+                        }
                     </ListItem>                    
                 ))            
             }

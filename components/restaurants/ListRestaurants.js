@@ -28,11 +28,10 @@ export default function ListRestaurants({restaurants, navigation, handleLoadMore
 }
 
 function Restaurant({restaurant, navigation}) {
-    const  {id, images, name, address, description, phone, email, callingCode} =  restaurant.item
+    const  {id, images, name, address, description, phone, email} =  restaurant.item
     const  imageRestaurant  = images[3]
 
-
-
+      
     const goRestaurant = () =>{
         navigation.navigate("onerestaurant", {id, name})
     }
@@ -52,7 +51,7 @@ function Restaurant({restaurant, navigation}) {
             <View>
                     <Text style ={styles.restaurantStyleTitle}>{name}</Text>
                     <Text style ={styles.restaurantStyleAddrees}>{address}</Text>
-                    <Text style ={styles.restaurantStyleInforPhone}>{formatPhone(callingCode, phone)}</Text>
+                    <Text style ={styles.restaurantStyleInforPhone}>{formatPhone(phone)}</Text>
                     <Text style ={styles.restaurantStyleEmail}>{email}</Text>
                     <Text style ={styles.restaurantStyleDecription}>                        
                         {                    

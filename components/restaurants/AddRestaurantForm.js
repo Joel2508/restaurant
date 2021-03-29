@@ -34,6 +34,7 @@ export default function AddRestaurantForm({toastRef, setLoading, navigation}) {
     const [locationRestaurant, setLocationRestaurant] = useState(null)
 
     const AddRestaurant = async() => {
+        console.log(formData.callingCode)
     
         if(!validateForm()){
             return
@@ -49,7 +50,7 @@ export default function AddRestaurantForm({toastRef, setLoading, navigation}) {
             description : formData.description,
             email: formData.email,
             phone : formData.phone, 
-            callingCode : formData.callingCode,
+            nameCountry : formData.nameCountry,
             location : locationRestaurant,
             images : responseUploadImage,
             rating: 0, 
@@ -319,11 +320,23 @@ function  UploadImagen({toastRef, imagesSelectd, setImageSelectd}) {
 function  FormAdd({formData, setFormData, errorName, errorAddres, errorDescription, errorEmail, 
     errorPhoneNumber, setIsVisibleMap, locationRestaurant}) {
 
-    const [country, setCountry] = useState("DO")
-    const [callingCode, setCallingCode] = useState("809")
+    const [country, setCountry] = useState("")
+    const [callingCode, setCallingCode] = useState([])
     const [phone, setPhone] = useState("")
+    const [maxLengthPhone, setMaxLengthPhone] = useState(25)
+    const [enable, setEnable] = useState(false)
 
-    
+    const onSelectCountry =(country) =>{
+        setCountry(country.cca2)
+        setEnable(true)
+        if(country.cca2 === "DO"){
+            setMaxLengthPhone(10)
+        }
+        else{
+            setMaxLengthPhone(25)
+        }
+        setFormData({...formData, "country" : country.cca2, "nameCountry" : country.name})                                                   
+    }
 
     const onChange =(e, type) => {
        setFormData({...formData, [type] : e.nativeEvent.text})
@@ -377,21 +390,22 @@ function  FormAdd({formData, setFormData, errorName, errorAddres, errorDescripti
                 <CountryPicker
                 withFilter
                 withFlag
-                withCallingCode
-                withCallingCodeButton
+                //withCallingCode
+                //withCallingCodeButton
+                withCurrency
                 containerStyle= {styles.countryPicker}
-                countryCode={country}
-                onSelect ={(country) => {
-                    setCountry(country.cca2)
-                    setFormData({...formData, "country" : country.cca2, "callingCode" : country.callingCode[0]})
-                    setCallingCode(country.callingCode[0])
-                }}/>
+                countryCode={country}   
+                withCountryNameButton 
+                                          
+                onSelect ={(country) => onSelectCountry(country)}/>
                 <Input
-                    placeholder = "WhatsApp the Restaurant..."
+                    placeholder = "WhatsApp the Restaurant..." 
                     keyboardType="phone-pad"
                     containerStyle= {styles.inputPhone}
                     errorMessage = {errorPhoneNumber}
                     defaultValue ={formData.phone}
+                    maxLength = {maxLengthPhone}
+                    editable = {enable}
                     onChange = {(e) => onChange(e, "phone")}
       
                     rightIcon = {
@@ -434,7 +448,7 @@ const defaultValues = () => {
         description: "",
         address : "",
         country : "DO",
-        callingCode : "809"
+        nameCountry : ""
     }
 }
 
