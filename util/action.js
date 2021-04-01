@@ -266,8 +266,7 @@ export const getFavorites = async() => {
         await Promise.all(
             map(response.docs, async(doc)=> {
                 const favorite = doc.data()
-                console.log(doc)
-                const responseRestaurants =await getDocumentById("restaurants", favorite.idRestaurant)                
+                const responseRestaurants = await getDocumentById("restaurants", favorite.idRestaurant)                
                 if(responseRestaurants.statusResponse){
                     result.favorites.push(responseRestaurants.document)
                 }
@@ -368,11 +367,11 @@ Notifications.setNotificationHandler({
 })
 export const startNofications = (notificationListener, responseListener) =>{
     notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
-        console.log(notification)
+        
     })
 
     responseListener.current = Notifications.addNotificationResponseReceivedListener(notification => {
-        console.log(notification)
+        
     })
 
     return () => {
@@ -405,4 +404,28 @@ export const setNotificationsMessage = (token, title, body, data) => {
         data: data
     }
     return message
+}
+
+
+export const getUserFavorite = async(restaurantId)=> {
+
+    const result = {statusResponse : true , error : null, users :[] }
+    try {
+        const response = await db.collection("favorites").where("idRestaurant", "==", restaurantId).get()
+        await Promise.all(
+
+            map(response.docs, async(doc)=>{
+              const favorite = doc.data()
+              const user = await getDocumentById("users", favorite.idUser)
+              if(user.statusResponse){
+                  result.users.push(user.document)
+              }
+            })
+
+        )
+    } catch (error) {
+        result.error = error
+        result.statusResponse = false
+    }
+    return result
 }

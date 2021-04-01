@@ -1,20 +1,23 @@
 import React, {useState, useRef, useEffect, useCallback} from 'react'
-import { Alert, Dimensions, ScrollView } from 'react-native'
+import { Alert, Dimensions, ScrollView, Settings } from 'react-native'
 import { StyleSheet, Text, View } from 'react-native'
-import { Icon, ListItem, Rating } from 'react-native-elements'
+import { Button, Icon, Input, ListItem, Rating } from 'react-native-elements'
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+
 
 import Toast from 'react-native-easy-toast'
 
 import firebase from 'firebase/app'
 
 import { useFocusEffect } from '@react-navigation/native'
-import {map} from 'loadsh'
+import {map, isEmpty} from 'loadsh'
 import CarouselImage from '../../components/CarouselImage'
 import Loading from '../../components/Loading'
 import MapRestaurant from '../../components/restaurants/MapRestaurant'
-import { addDocumentWithoutId, getCurrentUser, getDocumentById, getFavorite, removeFavorite, sendPushNotifications, setNotificationsMessage } from '../../util/action'
+import { addDocumentWithoutId, getCurrentUser, getDocumentById, getFavorite, getToken, getUserFavorite, removeFavorite, sendPushNotifications, setNotificationsMessage } from '../../util/action'
 import { callNumber, formatPhone, sendEmail, sendWhastApp } from '../../util/helper'
 import ListReviews from '../../components/restaurants/ListReviews'
+import Modal from '../../components/Modal'
 
 const widthDimension = Dimensions.get("window").width
 
@@ -23,7 +26,7 @@ export default function Restaurant({navigation, route}) {
     const toastRef = useRef()
     const [currentUser, setCurrentUser] = useState(null)
     const [activeSlide, setActiveSlide] = useState(0)
-
+    const [modalNotification, setModalNotification] = useState(false)
     const {id, name} = route.params 
     navigation.setOptions({title: name})
     const [restaurant, setRestaurant] = useState(null)
@@ -37,6 +40,7 @@ export default function Restaurant({navigation, route}) {
         user ? setUserLogger(true) : setUserLogger(false)
         setCurrentUser(user)
     })
+
 
     useFocusEffect(
         useCallback(() => {
@@ -129,11 +133,18 @@ export default function Restaurant({navigation, route}) {
                 currentUser={currentUser}
                 phoneNotFormat = {restaurant.phone}
                 setLoading ={setLoading}
+                setModalNotification={setModalNotification}
+                
                 />
             <ListReviews
              navigation = {navigation}
-             idRestaurant = {restaurant.id}
-             
+             idRestaurant = {restaurant.id}                          
+            />
+            <SendMessage    
+            modalNotification ={modalNotification} 
+            setModalNotification = {setModalNotification}
+            restaurant={restaurant}
+            setLoading ={setLoading}
             />
             <Toast ref={toastRef} position="center" opacity ={0.5}/>            
             <Loading isVisible ={loading} text = "Wait please..."/>
@@ -141,13 +152,112 @@ export default function Restaurant({navigation, route}) {
     )
 }
 
-function RestaurantInfo({name, location, address, email, phone, currentUser, phoneNotFormat, setLoading}) {
+function SendMessage({modalNotification, setModalNotification, restaurant, setLoading}) {
+     const [title, setTitle] = useState("")
+     const [errorTitle, setErrorTitle] = useState(null)
+     const [message, setMessage] = useState("")
+     const [errorMessage, setErrorMessage] = useState(null)
+
+ 
+
+     const sendNotification = async()=>{
+        
+
+        if(!valideForm()){
+           return
+        }
+
+        setLoading(true)
+
+        const userName= getCurrentUser().displayName ? getCurrentUser().displayName : "Anonimo"
+
+        const theMessage = ` ${message} the restaurant : ${restaurant.name}`
+
+        const usersFavorite = await getUserFavorite(restaurant.id)
+
+
+        if(!usersFavorite.statusResponse){
+            setLoading(false)
+            Alert.alert("Error get the users what lovers the restaurant.")
+            return
+        }
+
+
+        await Promise.all(
+            map(usersFavorite.users, async(user)=> {             
+                const messageNotification = await setNotificationsMessage(
+                    user.token,
+                    `${userName}, he said : ${title}`,
+                    theMessage,
+                    {data: theMessage}
+                )
+                await sendPushNotifications(messageNotification)        
+            })
+        )
+        
+        setLoading(false)
+        setTitle(null)
+        setMessage(null)
+        setModalNotification(false)
+    }
+
+    const valideForm  =() => {
+        if(isEmpty(title)){
+            setErrorTitle("This filed is empty.")
+            return false
+        }
+        if(isEmpty(message)){
+            setErrorTitle("")
+            setErrorMessage("The filed message is empty, you mus't enter a message.")
+            return false
+        }
+        setErrorMessage("")
+        return true
+    }
+     return(
+         <Modal
+            isVisible={modalNotification}
+           setVisible={setModalNotification} >
+         <KeyboardAwareScrollView style = {styles.viewScrollSendMessage}>
+
+          <View style={styles.modalNotificationStyle}>
+              <Text style={styles.textStyle}>Send a message to  lovers {restaurant.name}
+              </Text>
+              <Input
+                placeholder= "Title the message..."
+                onChangeText = {(text)=> setTitle(text)}
+                value = {title}
+                errorMessage = {errorTitle}
+              />
+              <Input
+                placeholder= "Message..."
+                multiline
+                inputStyle = {styles.textAreaStyle}
+                onChangeText = {(text)=> setMessage(text)}
+                value = {message}
+                errorMessage = {errorMessage}
+              />
+              <Button 
+              title = "Send Message"
+              buttonStyle = {styles.btnSendMessage}
+              onPress ={sendNotification}
+              containerStyle = {styles.btnContainer}/>
+          </View>
+          </KeyboardAwareScrollView>
+    
+          </Modal> 
+     )
+
+}
+
+function RestaurantInfo({name, location, address, email, 
+    phone, currentUser, phoneNotFormat, setModalNotification}) {
     
 
     const listInfo = [
         { type: "addres", text: address, iconLeft: "map-marker-outline", iconRigth : "message-text-outline"},
         { type: "phone", text: phone, iconLeft: "phone", iconRigth : "whatsapp"},
-        {type: "email", text: email, iconLeft: "at"},        
+        { type: "email", text: email, iconLeft: "at"},        
     ]
 
     const actionLeft = (text)=> {
@@ -165,45 +275,18 @@ function RestaurantInfo({name, location, address, email, phone, currentUser, pho
     const actionRigth = (text)=> {
         if(text === "phone") {
             phone = `+1${phoneNotFormat}`
-            console.log(phone)
             if(currentUser){
                 sendWhastApp(phone, "Interesting " + ` I am ${currentUser.displayName}, I am interested in your services`)
              }else {
                 sendWhastApp(phone, "Interesting " + ` I am interested in your services`)
              }
         }
-        else if(text === "addres"){
-            sendNotification()
+        else if(text == "addres"){
+            setModalNotification(true)
         }
     }
 
-    const sendNotification = async()=>{
-        
-        setLoading(true)
-        const userUid = getCurrentUser().uid
-        const resultToken = await getDocumentById("users", userUid )
-
-
-        if(!resultToken.statusResponse){
-            setLoading(false)
-            Alert.alert("You can't get the token for user")
-            return
-        }
-        const messageNotification = await setNotificationsMessage(
-            resultToken.document.token,
-            `Title the Test`,
-            `Message Test`,
-            {data: `Data the test`}
-        )
-        const response = await sendPushNotifications(messageNotification)
-        setLoading(false)
-        if(response){
-            Alert.alert("Message send success")
-        }else{
-            Alert.alert("Can't send message")
-
-        }
-    }
+    
     return (
         <View style ={styles.viewRestaurantInfo}>
             <Text style ={styles.infoTitleRestaurant}>
@@ -309,5 +392,30 @@ const styles = StyleSheet.create({
         borderBottomLeftRadius : 100,
         padding : 5,
         paddingLeft : 15
+    },
+    textAreaStyle : {
+        height : 100,
+        paddingHorizontal : 10,        
+    }, 
+    btnSendMessage : {
+        backgroundColor : "#3c3c4c"
+    },
+    btnContainer : {
+        width: "65%",
+        borderRadius: 16
+    },
+    textStyle: {
+        color : "#000",
+        fontSize : 16,
+        fontWeight : "bold"
+    },
+    modalNotificationStyle : {
+        justifyContent : "center",
+        alignItems : "center"
+    },
+    viewScrollSendMessage: {
+        height: 300
     }
+
+
 })
