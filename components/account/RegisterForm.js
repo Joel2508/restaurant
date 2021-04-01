@@ -1,17 +1,27 @@
 import React, {useState} from 'react'
 import { StyleSheet, Text, View } from 'react-native'
-import { Button, Icon, Input } from 'react-native-elements'
+
+import { Button, Icon, Input,  } from 'react-native-elements'
 import { validateEmail } from '../../util/helper'
 import {size} from 'loadsh'
 import {useNavigation} from '@react-navigation/native'
 
+import PickerModal from '../PickerModal'
+
+
+import {Picker} from '@react-native-picker/picker'
+
+
 import {registerUser} from '../../util/action'
 import Loading from '../Loading'
+
 
 export default function RegisterForm() {
     const navigation = useNavigation()
 
+    const [showPicker, setShowPicker] = useState('');
     
+    const [selectedLanguage, setSelectedLanguage] = useState();
     const [showPassword, setShowPassword] = useState(false)
     const [formData, setFormData] = useState(defaultFormDataValue())
 
@@ -20,11 +30,21 @@ export default function RegisterForm() {
     const [erroConfirmPassword, seterroConfirmPassword] = useState("")
 
     const [loadgin, setLoadgin] = useState(false)
+    const [client, setClient] = useState("")
+    const [properties, setProperties] = useState("")
+    const [enable, setEnable] = useState(false)
 
+    const selectTypeUser = () =>{
+        setEnable(true)
+    }
 
     const onChange =(e, type) => {
        setFormData({...formData, [type] : e.nativeEvent.text})
     }
+    
+    const pickerValue = {
+        typerUser: [ client, properties],
+      };
 
 
     const registerUserClick = async() => {
@@ -73,54 +93,90 @@ export default function RegisterForm() {
 
     }
     return (
-        <View style ={styles.form}>
-            <Input 
-            containerStyle ={styles.input}
-            placeholder="Enter your email..."
-            onChange={(e) => onChange(e, "email")}
-            keyboardType="email-address"
-            errorMessage = {erroEmail}
-            defaultValue ={formData.email}/>
-            <Input 
-            containerStyle ={styles.input}
-            placeholder="Enter your password..."
-            password={true}
-            secureTextEntry= {!showPassword}
-            onChange={(e) => onChange(e, "password")}
-            errorMessage = {erroPassword}
-            defaultValue ={formData.password}
-            rightIcon={
+      <View style={styles.form}>
+        <Input
+          containerStyle={styles.input}
+          placeholder="Enter your email..."
+          onChange={(e) => onChange(e, "email")}
+          keyboardType="email-address"
+          errorMessage={erroEmail}
+          defaultValue={formData.email}
+        />
+        <Input
+          containerStyle={styles.input}
+          placeholder="Enter your password..."
+          password={true}
+          secureTextEntry={!showPassword}
+          onChange={(e) => onChange(e, "password")}
+          errorMessage={erroPassword}
+          defaultValue={formData.password}
+          rightIcon={
             <Icon
-              type ="material-community"
-              name = {showPassword  ?  "eye-off-outline" : "eye-outline"}
+              type="material-community"
+              name={showPassword ? "eye-off-outline" : "eye-outline"}
               iconStyle={styles.icon}
-              onPress = {() => setShowPassword(!showPassword)}
-             />
-             }/>
-             <Input 
-            containerStyle ={styles.input}
-            placeholder="Enter your confirm password..."
-            password={true}
-            secureTextEntry= {!showPassword}
-            onChange={(e) => onChange(e, "confirm")}
-            errorMessage = {erroConfirmPassword}
-            defaultValue ={formData.confirm}
-            rightIcon={
-                <Icon
-                type ="material-community"
-                name = {showPassword  ?  "eye-off-outline" : "eye-outline"}
-                iconStyle={styles.icon}
-                onPress = {() => setShowPassword(!showPassword)}
-                   /> }/>
-
-            <Button buttonStyle={styles.button}
-            containerStyle = {styles.btncontainer}
-            title="Register new user"
-            onPress ={() => registerUserClick()}
+              onPress={() => setShowPassword(!showPassword)}
             />
-            <Loading isVisible = {loadgin} text="Create Account...."/>
+          }
+        />
+        <Input
+          containerStyle={styles.input}
+          placeholder="Enter your confirm password..."
+          password={true}
+          secureTextEntry={!showPassword}
+          onChange={(e) => onChange(e, "confirm")}
+          errorMessage={erroConfirmPassword}
+          defaultValue={formData.confirm}
+          rightIcon={
+            <Icon
+              type="material-community"
+              name={showPassword ? "eye-off-outline" : "eye-outline"}
+              iconStyle={styles.icon}
+              onPress={() => setShowPassword(!showPassword)}
+            />
+          }
+        />
+
+        <Button
+          buttonStyle={styles.button}
+          containerStyle={styles.btncontainer}
+          title="Register new user"
+          onPress={() => registerUserClick()}
+        />
+        <Button
+          buttonStyle={styles.button}
+          containerStyle={styles.btncontainer}
+          title="Select Typer User"
+          onPress={() => selectTypeUser()}
+        />
+
+        {/* <Button buttonStyle={styles.button}
+            containerStyle = {styles.btncontainer}
+            title="Select Type User"
+            onPress ={(value) => pickerShowsValue(value)}
+            />
+            <PickerModal 
+            visible={Boolean(showPicker)}
+            items={showPicker? pickerValue[showPicker] : []}
+            onClose={() => setShowPicker('')}
+            onSelect ={showPicker}
+            value = {showPicker}/> */}
+        <View>
+          <Picker
+            enabled = {enable}
+            selectedValue={selectedLanguage}
+            onValueChange={(itemValue, itemIndex) =>
+              setSelectedLanguage(itemValue)
+            }
+          >
+            <Picker.Item label="Client" value="client" />
+            <Picker.Item label="Properties" value="properties" />
+          </Picker>
         </View>
-    )
+
+        <Loading isVisible={loadgin} text="Create Account...." />
+      </View>
+    );
 }
 const defaultFormDataValue = () => {
     return { email:"", password:"", confirm:""}
