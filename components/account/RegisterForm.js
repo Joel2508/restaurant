@@ -12,7 +12,7 @@ import PickerModal from '../PickerModal'
 import {Picker} from '@react-native-picker/picker'
 
 
-import {registerUser} from '../../util/action'
+import {addDocumentWithId, getCurrentUser, getToken, registerUser} from '../../util/action'
 import Loading from '../Loading'
 
 
@@ -55,13 +55,24 @@ export default function RegisterForm() {
 
         const resutl = await registerUser(formData.email, formData.password)
 
-        setLoadgin(false)
 
         if(!resutl.statusResponse){
-         seterroEmail(resutl.error)
-         setFormData("")
+        setLoadgin(false)
+        seterroEmail(resutl.error);
+         setFormData("");
          return
         }
+
+        const token = await getToken()
+
+        const resultToken = await addDocumentWithId("users", {token}, getCurrentUser().uid)
+        if(!resultToken.statusResponse){
+          setLoadgin(false)
+          seterroEmail(resultToken.error);
+          return
+        }
+
+        setLoadgin(false)
         navigation.navigate("account")
     }
     const validateData =() => {

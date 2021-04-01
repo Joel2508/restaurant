@@ -3,9 +3,15 @@ import * as firebase from 'firebase'
 import 'firebase/firestore'
 import { fileToBlob } from './helper'
 
+import * as Notifications from 'expo-notifications'
+ 
+import Constants from 'expo-constants'
+
 import {FireSQL} from  'firesql'
 
 import {map} from 'loadsh'
+import { Alert, Platform, PlatformColor } from 'react-native'
+import { not } from 'react-native-reanimated'
 const db = firebase.firestore(firebaseApp)
 
 
@@ -305,4 +311,98 @@ export const searchRestaurant = async(search) => {
 }
 
 
+export const getToken = async() => {
+    if(!Constants.isDevice){
+        Alert.alert("You must a physical device for notification.")
+        return
+    }
 
+    const {status : existingStatus} = await Notifications.getPermissionsAsync()
+    let finalStatus = existingStatus
+
+    if(existingStatus !== "granted"){
+        const {status } = await Notifications.requestPermissionsAsync()
+        finalStatus = status
+    }
+    if(finalStatus !== "granted"){
+        Alert.alert("You must the permission for notification.")
+        return
+    }
+
+    const token = (await Notifications.getExpoPushTokenAsync()).data
+    
+    
+    if(Platform.OS == "android"){
+        Notifications.setNotificationChannelAsync("defautl",  {
+            name :  "defautl",
+            importance : Notifications.AndroidImportance.MAX,
+            vibrationPattern : [0,250, 250, 250],
+            lightColor: "#FF231F7C"
+
+        })
+    }
+
+    return token 
+
+}
+
+
+
+export const addDocumentWithId = async(collection, data, doc) => {
+    const result = { statusResponse: true, error: null }    
+    try {
+        await db.collection(collection).doc(doc).set(data)
+    } catch (error) {
+        result.statusResponse = false
+        result.error = error
+    }
+    return result     
+}
+
+Notifications.setNotificationHandler({
+    handleNotification: async() =>({
+        shouldShowAlert : true,
+        shouldPlaySound : true,
+        shouldSetBadge : true
+    })
+})
+export const startNofications = (notificationListener, responseListener) =>{
+    notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+        console.log(notification)
+    })
+
+    responseListener.current = Notifications.addNotificationResponseReceivedListener(notification => {
+        console.log(notification)
+    })
+
+    return () => {
+        Notifications.removeNotificationSubscription(notificationListener)
+        Notifications.removeNotificationSubscription(responseListener)
+    }
+}
+
+export const sendPushNotifications = async(message) =>{
+    let response = false
+    await fetch("https://exp.host/--/api/v2/push/send", {
+        method : "POST",
+        headers : {
+         Accept : "application/json",
+         "Accept-encoding": "gzip, deflate",
+         "Content-Type" : "application/json",
+        },
+        body: JSON.stringify(message),
+    }).then(() =>  response = true) 
+
+    return response
+}
+
+export const setNotificationsMessage = (token, title, body, data) => {
+    const message = {
+        to: token,
+        sound : "default", 
+        title: title,
+        body: body,
+        data: data
+    }
+    return message
+}

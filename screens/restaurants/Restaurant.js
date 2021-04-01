@@ -12,7 +12,7 @@ import {map} from 'loadsh'
 import CarouselImage from '../../components/CarouselImage'
 import Loading from '../../components/Loading'
 import MapRestaurant from '../../components/restaurants/MapRestaurant'
-import { addDocumentWithoutId, getCurrentUser, getDocumentById, getFavorite, removeFavorite } from '../../util/action'
+import { addDocumentWithoutId, getCurrentUser, getDocumentById, getFavorite, removeFavorite, sendPushNotifications, setNotificationsMessage } from '../../util/action'
 import { callNumber, formatPhone, sendEmail, sendWhastApp } from '../../util/helper'
 import ListReviews from '../../components/restaurants/ListReviews'
 
@@ -128,6 +128,7 @@ export default function Restaurant({navigation, route}) {
                 phone = {formatPhone(restaurant.phone)}
                 currentUser={currentUser}
                 phoneNotFormat = {restaurant.phone}
+                setLoading ={setLoading}
                 />
             <ListReviews
              navigation = {navigation}
@@ -140,13 +141,13 @@ export default function Restaurant({navigation, route}) {
     )
 }
 
-function RestaurantInfo({name, location, address, email, phone, currentUser, phoneNotFormat}) {
+function RestaurantInfo({name, location, address, email, phone, currentUser, phoneNotFormat, setLoading}) {
     
 
     const listInfo = [
-        { type: "addres", text: address, iconLeft: "map-marker-outline"},
-        {type: "email", text: email, iconLeft: "at"},        
+        { type: "addres", text: address, iconLeft: "map-marker-outline", iconRigth : "message-text-outline"},
         { type: "phone", text: phone, iconLeft: "phone", iconRigth : "whatsapp"},
+        {type: "email", text: email, iconLeft: "at"},        
     ]
 
     const actionLeft = (text)=> {
@@ -171,8 +172,38 @@ function RestaurantInfo({name, location, address, email, phone, currentUser, pho
                 sendWhastApp(phone, "Interesting " + ` I am interested in your services`)
              }
         }
+        else if(text === "addres"){
+            sendNotification()
+        }
     }
 
+    const sendNotification = async()=>{
+        
+        setLoading(true)
+        const userUid = getCurrentUser().uid
+        const resultToken = await getDocumentById("users", userUid )
+
+
+        if(!resultToken.statusResponse){
+            setLoading(false)
+            Alert.alert("You can't get the token for user")
+            return
+        }
+        const messageNotification = await setNotificationsMessage(
+            resultToken.document.token,
+            `Title the Test`,
+            `Message Test`,
+            {data: `Data the test`}
+        )
+        const response = await sendPushNotifications(messageNotification)
+        setLoading(false)
+        if(response){
+            Alert.alert("Message send success")
+        }else{
+            Alert.alert("Can't send message")
+
+        }
+    }
     return (
         <View style ={styles.viewRestaurantInfo}>
             <Text style ={styles.infoTitleRestaurant}>
