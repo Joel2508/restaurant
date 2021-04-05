@@ -18,10 +18,17 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier" :  "com.joelarias.restaurants"
+      "bundleIdentifier" :  "com.joelarias.restaurants",
+      "config": {
+        "googleSignIn": {
+          "reservedClientId": "com.googleusercontent.apps.1029353427413-qeoasv596huonn8uumoa6af5rkgfv2mn"
+        }
+      },
+      "googleServicesFile": "./GoogleService-Info.plist"      
     },
     "android": {
       "package" : "com.joelarias.restaurants",
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"

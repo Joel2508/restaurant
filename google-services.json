@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "1029353427413",
+    "project_id": "restaurant-c1d02",
+    "storage_bucket": "restaurant-c1d02.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1029353427413:android:e3ff7b8d9c6ddf20b16d5c",
+        "android_client_info": {
+          "package_name": "com.joelarias.restaurants"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1029353427413-scn448d5v0b6ad8qklco8egubod3l5lf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA5_TGvI0qpmDL2lyEifMxjEmCl_be6pAs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1029353427413-scn448d5v0b6ad8qklco8egubod3l5lf.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1029353427413-qeoasv596huonn8uumoa6af5rkgfv2mn.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.joelarias.restaurants"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
