@@ -12,6 +12,7 @@ import TopRestaurantsStack from '../navigations/TopRestaurantsStack'
 
 
 
+
 const Tab =  createBottomTabNavigator()
 
 export default function Navigation() {
@@ -50,7 +51,7 @@ export default function Navigation() {
     }
 
     return (
-        <NavigationContainer>
+        <NavigationContainer >
             <Tab.Navigator
                 initialRouteName = "restaurants"
                 tabBarOptions ={{
@@ -72,7 +73,7 @@ export default function Navigation() {
                     component ={FavoritesStack}
                     options = {{title : "Favorites"}}
                 />
-                <Tab.Screen
+                <Tab.Screen                               
                     name="search"
                     component ={SearchStack}
                     options = {{title : "Search"}}

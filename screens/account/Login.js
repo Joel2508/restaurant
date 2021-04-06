@@ -6,9 +6,10 @@ import LoginForm from '../../components/account/LoginForm'
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view' 
 
 
+
 export default function Login() {
     return (
-       <KeyboardAwareScrollView>
+       <KeyboardAwareScrollView style={styles.KeyboardAwareScrollViewStyle}>
            <Image
            source = {require("../../assets/images.png")}
            resizeMode = 'stretch'
@@ -17,10 +18,26 @@ export default function Login() {
            <View style ={styles.contain}>
                <LoginForm/>
               <CreateAccount/>
+              <RecoverPasswordUser/>
            </View>
            <Divider style={styles.divider}/>
        </KeyboardAwareScrollView>
     )
+}
+
+
+function RecoverPasswordUser () {
+   const navigation = useNavigation()
+
+   return (
+       <Text style={styles.register}
+       onPress ={() => navigation.navigate("recover-password")}>
+         Are you din't know your password?{""}
+         <Text style={styles.btnregister}>
+         Get it Back
+         </Text>
+       </Text>
+   )
 }
 
 function CreateAccount (props) {
@@ -64,6 +81,9 @@ const styles = StyleSheet.create({
         fontSize : 16,
         fontWeight : 'bold',
         
+    },
+    KeyboardAwareScrollViewStyle : {
+        backgroundColor: "white"
     }
 
 })

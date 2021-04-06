@@ -21,18 +21,18 @@ export default function Search({navigation}) {
             if(response.statusResponse){
                 setRestaurants(response.restaurants)
             }
-            console.log(restaurants)
         }
         getData()
     }, [search])
 
     return (
         <View>
-            <SearchBar
+            <SearchBar            
             placeholder ="You enter name the restaurant"
             onChangeText={(e) => setSearch(e)}
             containerStyle ={styles.searchBar}
             value = {search}/>
+            
             {
                 size(restaurants) > 0 ? (
                     <FlatList
@@ -61,30 +61,33 @@ function Restaurant ({restaurant, navigation}) {
     const {id, name, images, } = restaurant.item
 
     return ( 
-        <ListItem style ={styles.menuItem}
-        onPress={() => navigation.navigate("restaurants", {
-            screen : "onerestaurant",
-            params: {id, name}
-        })}>
-            <Image 
-               resizeMethod="cover"
-               PlaceholderContent= {<ActivityIndicator color = "grey"/>}
-               source ={{uri : images[0]}}
-               style = {styles.imagesRestaurants}
+        <View style={styles.styleView}>
+            <ListItem style ={styles.menuItem}
+                onPress={() => navigation.navigate("restaurants", {
+                screen : "onerestaurant",
+                params: {id, name}
+            })}>
+                <Image 
+                resizeMethod="cover"
+                PlaceholderContent= {<ActivityIndicator color = "grey"/>}
+                source ={{uri : images[0]}}
+                style = {styles.imagesRestaurants}
 
-             />
+                />
 
 
 
-        <ListItem.Content>
-            <ListItem.Title>{name}</ListItem.Title>
-        </ListItem.Content>
-        <Icon 
-         type="material-community"
-         name = "chevron-right"
-        />
+            <ListItem.Content>
+                <ListItem.Title>{name}</ListItem.Title>
+            </ListItem.Content>
+            <Icon 
+            type="material-community"
+            name = "chevron-right"
+            />
 
-        </ListItem>
+            </ListItem>
+        </View>
+        
     )
 
 }
@@ -97,7 +100,8 @@ const styles = StyleSheet.create({
         backgroundColor : "#fff"
     },
     menuItem: {
-     margin : 10
+     margin : 10,     
+     backgroundColor: "white"
     },
     imagesRestaurants : {
         width : 80,
@@ -105,6 +109,9 @@ const styles = StyleSheet.create({
     },
     notFount : {
         alignSelf : "center",
-        width : "90%"
+        width : "100%"
+    },
+    styleView : {
+        backgroundColor: "white",
     }
 })

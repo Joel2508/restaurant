@@ -22,9 +22,15 @@ export default function Account() {
     if (Login == null){
        return  <Loading isVisible= {true} text="Loading..."/>
     }
-    return Login ?  <UserLogged/> : <UserGuest/>
+    return (
+        Login ?  <UserLogged/> : <UserGuest/>
+    )
 
 
 }
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+    viewStyle : {
+        backgroundColor : "white"
+    }
+})

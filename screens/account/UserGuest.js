@@ -31,8 +31,7 @@ export default function UserGuest() {
 
 const styles = StyleSheet.create({
     viewBody : {
-        marginHorizontal : 40, 
-        marginVertical:40,
+        backgroundColor : "white"
     },
     image : {
         height: 150,
@@ -54,6 +53,7 @@ const styles = StyleSheet.create({
     },
     button : {        
         backgroundColor : '#3c3c4c',
-        borderRadius : 10
+        borderRadius : 23,
+        margin: 20
     }
 })

@@ -28,6 +28,6 @@ const styles = StyleSheet.create({
       },
       containerScrollView :{
           flex : 1,
-          marginTop: 10
+          backgroundColor: "white"
       }
 })
