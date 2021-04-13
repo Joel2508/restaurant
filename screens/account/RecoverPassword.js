@@ -92,8 +92,8 @@ const styles = StyleSheet.create({
     image: {           
         height: 200,
         width: "105%",    
-        marginBottom: 10,
-        margin : 20, 
-        alignItems : "flex-end"               
+        marginLeft: 50,
+        margin:10,
+        alignItems : "center"              
       }
   })

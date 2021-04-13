@@ -5,6 +5,7 @@ import { getTopRestaurant } from '../util/action'
 import Toast from 'react-native-easy-toast'
 import Loading from '../components/Loading'
 import ListTopRestaurants from '../components/ranking/ListTopRestaurants'
+import { ScrollView } from 'react-native-gesture-handler'
 
 
 
@@ -23,9 +24,10 @@ export default function TopRestaurants({ navigation }) {
                 const limit = 10
                 setLoading(true)
                 const response = await getTopRestaurant(limit)
+                console.log(response)
                 setLoading(false)
                 if(!response.statusResponse){
-                   toastRef.current.show("Erro to loading the top at excellent restaurant.", 3000)
+                   toastRef.current.show("Error to loading the top at excellent restaurant.", 3000)
                    return
                 }
                 setRestaurants(response.restaurants)
@@ -35,11 +37,16 @@ export default function TopRestaurants({ navigation }) {
     )
 
     return (
+      <ScrollView style={{backgroundColor:"white"}}>
         <View>
-            <ListTopRestaurants restaurants={restaurants} navigation ={navigation}/>
-            <Loading isVisible={loading} text= "Wait Please..."/>
+          <ListTopRestaurants
+            restaurants={restaurants}
+            navigation={navigation}
+          />
+          <Loading isVisible={loading} text="Wait Please..." />
         </View>
-    )
+      </ScrollView>
+    );
 }
 
 const styles = StyleSheet.create({})

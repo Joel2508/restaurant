@@ -29,7 +29,9 @@ export const isUserLogged = () =>{
 }
 
 export const getCurrentUser = () => {
-    return firebase.auth().currentUser
+    
+    const user = firebase.auth().currentUser
+    return user
 }
 
 export const closeSession = () => {
@@ -440,5 +442,23 @@ export const sendEmailResetPassword = async(email) => {
         result.error = error
     }
     return result     
+}
+
+
+export const getDocumentByIdUser = async() => {
+
+    const id = getCurrentUser().uid
+    const result = {statusResponse : null, error: null,  document: null}
+    try {
+        const response =  await db.collection("users").doc(id).get()
+        result.document = response.data()
+        result.document.id = response.id      
+    } catch (error) {
+        result.statusResponse = false,
+        result.error = error
+
+    }
+    return result
+
 }
 

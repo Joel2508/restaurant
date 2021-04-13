@@ -70,8 +70,9 @@ return (
         <Input style={styles.input}
          defaultValue ={displayEmail}    
          placeholder = "Enter your Email...."     
-         errorMessage = {errorEmail}
+         errorMessage = {errorEmail}         
          keyboardType = "email-address"
+         
          onChange ={(e) => setNewEmail(e.nativeEvent.text)}         
             leftIcon = {
                 <Icon
@@ -112,7 +113,7 @@ const styles = StyleSheet.create({
         paddingVertical : 10,          
     },
     input: {
-        marginBottom: 10,
+        marginBottom: 10,    
     }, 
     btnButton:{
         backgroundColor : "#3c3c4c",

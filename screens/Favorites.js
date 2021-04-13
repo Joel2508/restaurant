@@ -173,7 +173,7 @@ function Restaurant({restaurant,setLoading,loading,toast,navigation, setReloadDa
 
 function NotFoundRestaurants(){
     return (
-        <View style={{flex: 1, alignItems : "center", justifyContent: "center"}}>
+        <View style={{flex: 1, alignItems : "center", justifyContent: "center", backgroundColor: "white"}}>
             <Icon type="material-community"
                    name = "alert-octagon-outline"
                    size={50}                   
@@ -187,7 +187,7 @@ function NotFoundRestaurants(){
 
 function UserNotLogged ({navigation}) {
     return (
-        <View style={{flex:1, alignItems :"center", justifyContent: "center"}}>
+        <View style={{flex:1, alignItems :"center", justifyContent: "center", backgroundColor: "white"}}>
             <Icon type="material-community" name = "alert-octagon-outline"size={50}/>
             <Text style={{fontSize:20, fontWeight: "bold", textAlign:"center"}}>You needing is log in for view your favorites restaurants  </Text>
            <Button title="Log In" 
@@ -201,13 +201,14 @@ function UserNotLogged ({navigation}) {
 const styles = StyleSheet.create({
     viewContainer: {
        flex: 1,
-       backgroundColor : "#fff"
+       backgroundColor : "white"
     },
     loadingRestaurant : {
         marginVertical : 10
     },
     restaurantFavoritesStyles : {
         margin : 1,
+        backgroundColor: "white"
     },
     imageStyle : {
         width : "100%",

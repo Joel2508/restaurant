@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
      marginBottom : 10
     },
     description : {
-        textAlign : 'justify',
+        textAlign : 'center',
         marginBottom:20,
         fontSize:15,
         color : '#3c3c4c'

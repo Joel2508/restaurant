@@ -8,7 +8,7 @@ import Loading from '../../components/Loading'
 
 import {size} from  'loadsh'
 import firebase from 'firebase/app'
-import { getMoreRestaurant, getRestaurant } from '../../util/action'
+import {  getDocumentByIdUser, getMoreRestaurant, getRestaurant } from '../../util/action'
 import ListRestaurants from '../../components/restaurants/ListRestaurants'
 
 
@@ -24,20 +24,40 @@ export default function Restaurants({navigation}) {
     
     const [userRestaurant, setUserRestaurant] = useState(null)
 
+    
+
     useEffect(() => {
-        firebase.auth().onAuthStateChanged((userInfor) => {
-            userInfor ? setUserRestaurant(true) : setUserRestaurant(false)
-        })
-    }, [])
+      firebase.auth().onAuthStateChanged((userInfor) => {
+        if(userInfor !== null){
+            getUserTypeUser(true)
+        }else{
+            getUserTypeUser(false)
+        }
+      });
+    }, []);
 
-
+    const getUserTypeUser = async(value) => {
+        
+        const userResponse = await getDocumentByIdUser();
+        if (userResponse.document.typeUserValue === "property") {
+            setUserRestaurant(true)
+            value = true
+        } else {
+            setUserRestaurant(false)
+            value = false
+        }     
+        return value
+    }
 
 
     useFocusEffect (
         useCallback (() => {
             async function getData(){
                 setLoading(true)
-                const response = await getRestaurant(limiteRestaurants)              
+
+                const response = await getRestaurant(limiteRestaurants)  
+                console.log(response)
+                
                 if(response.statusResponse){
                     setStartRestaurants(response.startRestaurants)
                     setRestaurants(response.restaurants)
@@ -80,7 +100,7 @@ export default function Restaurants({navigation}) {
                 )
             }
             {
-                userRestaurant && (
+                userRestaurant &&  (
                     <Icon 
                         type ="material-community"
                         name="plus"

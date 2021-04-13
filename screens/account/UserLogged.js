@@ -1,5 +1,5 @@
 import React, {useState, useRef, useEffect} from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, View, Image } from 'react-native'
 import { Button } from 'react-native-elements'
 import {useNavigation} from '@react-navigation/native'
 import { closeSession, getCurrentUser } from '../../util/action'
@@ -31,6 +31,12 @@ export default function UserLogged() {
                user && 
                (
                    <View> 
+                        <Image 
+                            source = {require("../../assets/images.png")}
+                            resizeMode = "stretch"        
+                            style = {styles.image}
+                        />
+
                      <InforUser 
                      user = {user} 
                      setLoading={setLoading}
@@ -77,6 +83,11 @@ const styles = StyleSheet.create({
     }, 
     btnLogOutTitle : {
         color: "#c1c1c1"
+    },
+    image : {
+        height:200,
+        width : "105%",
+        marginLeft:20
     }
 
 })

@@ -5,6 +5,8 @@ import {SearchBar, ListItem, Icon, Image} from 'react-native-elements'
 
 import {isEmpty, size} from 'loadsh'
 import { searchRestaurant } from '../util/action'
+import { ScrollView } from 'react-native-gesture-handler'
+
 
 export default function Search({navigation}) {
     const [search, setSearch] = useState("")
@@ -26,42 +28,42 @@ export default function Search({navigation}) {
     }, [search])
 
     return (
+      <ScrollView style={{backgroundColor:"white"}}>
         <View>
-            <SearchBar            
-            placeholder ="You enter name the restaurant"
+          <SearchBar
+            placeholder="You enter name the restaurant"
             onChangeText={(e) => setSearch(e)}
-            containerStyle ={styles.searchBar}
-            value = {search}/>
-            
-            {
-                size(restaurants) > 0 ? (
-                    <FlatList
-                    data ={restaurants}
-                    keyExtractor ={(item, index) => index.toString()}
-                    renderItem = {(restaurant) => (
-                        <Restaurant restaurant = {restaurant} navigation= {navigation} />
-                    )}/>
+            containerStyle={styles.searchBar}
+            value={search}
+          />
 
-                    
-
-                ) : (
-                    isEmpty(search) ? (
-                        <Text style={styles.notFount}>You enter firt letter the restaurant</Text>
-
-                    ) : (
-                        <Text style={styles.notFount}>Does not exist restaurant with that name </Text>
-                    )
-                )
-            }
+          {size(restaurants) > 0 ? (
+            <FlatList
+              data={restaurants}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={(restaurant) => (
+                <Restaurant restaurant={restaurant} navigation={navigation} />
+              )}
+            />
+          ) : isEmpty(search) ? (
+            <Text style={styles.notFount}>
+              You enter firt letter the restaurant
+            </Text>
+          ) : (
+            <Text style={styles.notFount}>
+              Does not exist restaurant with that name{" "}
+            </Text>
+          )}
         </View>
-    )
+      </ScrollView>
+    );
 }
 
 function Restaurant ({restaurant, navigation}) {
     const {id, name, images, } = restaurant.item
 
     return ( 
-        <View style={styles.styleView}>
+        <View style={{backgroundColor:"white"}}>
             <ListItem style ={styles.menuItem}
                 onPress={() => navigation.navigate("restaurants", {
                 screen : "onerestaurant",
@@ -109,9 +111,8 @@ const styles = StyleSheet.create({
     },
     notFount : {
         alignSelf : "center",
-        width : "100%"
+        width : "100%",
+        textAlign:"center",
+        fontSize:18
     },
-    styleView : {
-        backgroundColor: "white",
-    }
 })

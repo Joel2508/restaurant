@@ -37,7 +37,7 @@ function Restaurant ({restaurant, navigation}) {
     }, [])
 
     return (
-        <TouchableOpacity 
+        <TouchableOpacity style={{backgroundColor: "white"}}
         onPress = {() => navigation.navigate("restaurants", {
             screen: "onerestaurant", 
             params: {id, name}

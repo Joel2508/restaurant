@@ -17,6 +17,7 @@ import { useFocusEffect } from '@react-navigation/native'
 import SelectImageUserReview from './SelectImageUserReview'
 moment.locale("es")
 
+
 export default function ListReviews({navigation, idRestaurant}) {
 
     const [reviews, setReviews] = useState([])
