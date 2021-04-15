@@ -9,7 +9,7 @@ import { Alert, Dimensions } from 'react-native'
 import Modal from '../Modal'
 
 import MapView, { Marker,  UrlTile } from 'react-native-maps'
-import { addDocumentWithoutId, getCurrentUser, uploadImage } from '../../util/action'
+import { addDocumentWithoutId, getCurrentUser, getDocumentById, uploadImage } from '../../util/action'
 
 import uuid from 'random-uuid-v4'
 import { getCountryCurrencyAsync } from 'react-native-country-picker-modal/lib/CountryService'
@@ -34,7 +34,6 @@ export default function AddRestaurantForm({toastRef, setLoading, navigation}) {
     const [locationRestaurant, setLocationRestaurant] = useState(null)
 
     const AddRestaurant = async() => {
-        console.log(formData.callingCode)
     
         if(!validateForm()){
             return
@@ -61,6 +60,10 @@ export default function AddRestaurantForm({toastRef, setLoading, navigation}) {
         }
 
         const responseRestaurant = await addDocumentWithoutId("restaurants", restaurantObject)
+
+
+
+
         setLoading(false)
         
         if(!responseRestaurant.statusResponse){

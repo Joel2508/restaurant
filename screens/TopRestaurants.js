@@ -24,7 +24,6 @@ export default function TopRestaurants({ navigation }) {
                 const limit = 10
                 setLoading(true)
                 const response = await getTopRestaurant(limit)
-                console.log(response)
                 setLoading(false)
                 if(!response.statusResponse){
                    toastRef.current.show("Error to loading the top at excellent restaurant.", 3000)

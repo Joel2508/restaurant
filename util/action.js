@@ -30,7 +30,10 @@ export const isUserLogged = () =>{
 
 export const getCurrentUser = () => {
     
-    const user = firebase.auth().currentUser
+    const user =  firebase.auth().currentUser
+    if(user ===  null){
+        return null
+    }
     return user
 }
 
@@ -447,12 +450,16 @@ export const sendEmailResetPassword = async(email) => {
 
 export const getDocumentByIdUser = async() => {
 
-    const id = getCurrentUser().uid
-    const result = {statusResponse : null, error: null,  document: null}
+    const user =  firebase.auth().currentUser
+    
+    const result = {statusResponse : null, error: null, typeUser : null}
     try {
-        const response =  await db.collection("users").doc(id).get()
-        result.document = response.data()
-        result.document.id = response.id      
+        if(user === null){
+            return result
+        }
+        const response =  await db.collection("users").doc(user.uid).get()
+        result.typeUser = response.data().typeUserValue
+        result.statusResponse = true        
     } catch (error) {
         result.statusResponse = false,
         result.error = error

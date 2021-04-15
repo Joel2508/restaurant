@@ -3,6 +3,8 @@ import Navigation from './navigations/Navigation';
 import {LogBox} from 'react-native'
 import { startNofications } from './util/action';
 
+LogBox.ignoreLogs(['Setting a timer']);
+
 LogBox.ignoreAllLogs()
 
 export default function App() {

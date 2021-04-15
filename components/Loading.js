@@ -1,8 +1,9 @@
 import React from 'react'
 import { ActivityIndicator } from 'react-native'
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, View, LogBox } from 'react-native'
 import { Overlay } from 'react-native-elements'
 
+LogBox.ignoreLogs(['Setting a timer']);
 export default function Loading({isVisible , text}) {
     return (
         <Overlay 
@@ -15,6 +16,7 @@ export default function Loading({isVisible , text}) {
             <ActivityIndicator 
             size ="large"
             color = "#050505"
+        
             />
             {
                 text && <Text style = {styles.text}>{text}</Text>

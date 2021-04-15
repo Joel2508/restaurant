@@ -32,7 +32,6 @@ export default class PickerRestaurant extends Component {
             selectedItems={selectedItems}
             selectText="Pick Items"
             searchInputPlaceholderText="Search Items..."
-            onChangeInput={(text) => console.log(text)}
             altFontFamily="ProximaNova-Light"
             tagRemoveIconColor="#CCC"
             tagBorderColor="#CCC"
